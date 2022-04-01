@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const getRequiredFieldMessage = require('../errors/error-handling');
+const FileSchema = require('./File.schema');
 
 const CourseSchema = new mongoose.Schema(
   {
@@ -8,20 +9,30 @@ const CourseSchema = new mongoose.Schema(
       required: getRequiredFieldMessage('Course Title'),
       lowercase: true,
     },
+    code: {
+      type: String,
+      required: getRequiredFieldMessage('Course code'),
+      unique: [true, 'Course code should be unique'],
+    },
     description: {
       type: String,
       required: getRequiredFieldMessage('Course description'),
       lowercase: true,
     },
     courseDuration: {
-      type: Number,
+      type: String,
       required: getRequiredFieldMessage('Course Duration'),
     },
     image: {
-      type: String,
+      type: FileSchema,
       required: getRequiredFieldMessage('image Required'),
     },
-    instructors: [],
+    instructors: String,
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+    price: Number,
   },
   {
     timestamps: true,
