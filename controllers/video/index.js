@@ -4,6 +4,7 @@ const { uploadFileHelper } = require("../../lib/s3");
 
 // creating video
 const createVideo = catchAsync(async (req, res) => {
+    console.log(req);
   if (!req.file) {
     return res.status(400).json({ message: "Please select one video file" });
   }
@@ -11,8 +12,8 @@ const createVideo = catchAsync(async (req, res) => {
   if (video) {
     req.body["video"] = video;
   }
-  const video = await Video.create(req.body);
-  return res.status(201).json(video);
+  const doc = await Video.create(req.body);
+  return res.status(201).json(doc);
 });
 
 // get videos
@@ -47,5 +48,5 @@ module.exports = {
   getVideos,
   getVideoById,
   deleteVideo,
-  getDeletedVideos
+  getDeletedVideos,
 };

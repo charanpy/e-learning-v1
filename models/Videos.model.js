@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const getRequiredFieldMessage = require("../errors/error-handling");
 const { v4: uuidv4 } = require("uuid");
+const FileSchema = require("./File.schema");
 
 const VideoSchema = new mongoose.Schema(
   {
@@ -14,6 +15,10 @@ const VideoSchema = new mongoose.Schema(
       required: getRequiredFieldMessage("Video Title"),
       lowercase: true,
     },
+    video: {
+      type: FileSchema,
+      required: getRequiredFieldMessage("Video"),
+    },
     description: {
       type: String,
       required: getRequiredFieldMessage(" Video Description "),
@@ -21,11 +26,9 @@ const VideoSchema = new mongoose.Schema(
     },
     videoDuration: {
       type: String,
-      required: getRequiredFieldMessage("Video Duration"),
     },
     watchCount: {
       type: Number,
-      required: getRequiredFieldMessage("Watch Count"),
     },
     priority: {
       type: Number,
