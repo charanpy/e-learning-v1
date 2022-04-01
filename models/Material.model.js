@@ -1,15 +1,12 @@
-const mongoose = require("mongoose");
-const getRequiredFieldMessage = require("../errors/error-handling");
+const mongoose = require('mongoose');
+const getRequiredFieldMessage = require('../errors/error-handling');
+const FileSchema = require('./File.schema');
 
 const MaterialSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: getRequiredFieldMessage("Title"),
-    },
-    file: {
-      type: String,
-      required: getRequiredFieldMessage("File"),
+      required: getRequiredFieldMessage('Title'),
     },
 
     restrictCount: {
@@ -31,11 +28,15 @@ const MaterialSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      required: getRequiredFieldMessage("Category"),
+      required: getRequiredFieldMessage('Category'),
     },
     course: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Course",
+      ref: 'Course',
+    },
+    file: {
+      type: FileSchema,
+      required: getRequiredFieldMessage('File'),
     },
   },
   {
@@ -43,6 +44,6 @@ const MaterialSchema = new mongoose.Schema(
   }
 );
 
-const Material = mongoose.model("Material", MaterialSchema);
+const Material = mongoose.model('Material', MaterialSchema);
 
 module.exports = Material;

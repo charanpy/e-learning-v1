@@ -13,7 +13,7 @@ router.route('/').get(getCourse).post(upload().single('image'), createCourse);
 
 router
   .route('/:id')
-  .patch(upload().single('image'), updateCourse)
+  .put(upload().single('image'), updateCourse)
   .delete(deleteCourse);
 
 module.exports = router;
