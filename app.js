@@ -7,10 +7,11 @@ const errorController = require("./errors/error-controller");
 const app = express();
 app.use(express.json());
 const materialRoutes = require("./routes/material.route");
-
+const studentRoutes = require("./routes/student.route");
 app.use(cors());
 app.use(morgan("tiny"));
 app.use("/api/v2/material", materialRoutes);
+app.use("/api/v2/student", studentRoutes);
 app.use("*", (_, res) => {
   return res.status(404).json({ message: "Requested resource not found" });
 });
