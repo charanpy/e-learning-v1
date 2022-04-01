@@ -15,7 +15,7 @@ const createMaterial = catchAsync(async (req, res, next) => {
 
   if (!isCourse) return next(new AppError('No Course found', 404));
 
-  const file = await uploadFileHelper(req?.file, 'materials');
+  const file = await uploadFileHelper(req?.file, 'video-materials');
   if (file) req.body['file'] = file;
 
   const material = await Material.create(req.body);
@@ -39,7 +39,7 @@ const updateMaterial = catchAsync(async (req, res, next) => {
   const file = await updateFileHelper(
     req?.file,
     material?.file?.key,
-    'material'
+    'video-material'
   );
   if (file) req.body['file'] = file;
 
