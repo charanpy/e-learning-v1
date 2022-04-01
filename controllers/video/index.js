@@ -4,7 +4,6 @@ const { uploadFileHelper } = require("../../lib/s3");
 
 // creating video
 const createVideo = catchAsync(async (req, res) => {
-    console.log(req);
   if (!req.file) {
     return res.status(400).json({ message: "Please select one video file" });
   }
