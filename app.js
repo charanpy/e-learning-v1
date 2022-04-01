@@ -14,10 +14,12 @@ const materialRoutes = require("./routes/material.route");
 const authorRoutes = require("./routes/author.route");
 const courseRoutes = require("./routes/course.route");
 const videoRoutes = require("./routes/videos.route");
+const studentRoutes = require('./routes/student.route');
 
 app.use("/api/v2/author", authorRoutes);
-app.use("/api/v2/material", materialRoutes);
 app.use("/api/v2/course", courseRoutes);
+app.use("/api/v2/material", materialRoutes);
+app.use('/api/v2/student',studentRoutes);
 app.use("/api/v2/video", videoRoutes);
 app.use("*", (_, res) => {
   return res.status(404).json({ message: "Requested resource not found" });
