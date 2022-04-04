@@ -31,7 +31,6 @@ const StudentSchema = new mongoose.Schema(
     password: {
       type: String,
       default: generateOtp,
-      unique: [true, "password should be unique"],
     },
     dob: {
       type: String,
@@ -46,6 +45,10 @@ const StudentSchema = new mongoose.Schema(
     },
     image: {
       type: String,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
     },
     isDeleted: {
       type: Boolean,
