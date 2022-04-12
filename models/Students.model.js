@@ -19,9 +19,8 @@ const StudentSchema = new mongoose.Schema(
     rollNumber: {
       type: String,
       required: function () {
-        return !!this.role === "student";
+        return this.role === "student";
       },
-      unique: [true, "Roll Number Should be unique"],
     },
     email: {
       type: String,
@@ -30,7 +29,6 @@ const StudentSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      default: generateOtp,
     },
     dob: {
       type: String,
@@ -45,10 +43,6 @@ const StudentSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-    },
-    isVerified: {
-      type: Boolean,
-      default: false,
     },
     isDeleted: {
       type: Boolean,

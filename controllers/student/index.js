@@ -1,13 +1,25 @@
+const { hash } = require("../../services/password");
 const AppError = require("../../errors/AppError");
 const catchAsync = require("../../lib/catchAsync");
 const Student = require("../../models/Students.model");
+const { generateOtp } = require("../../services/otp-generate");
 
 // creating student
 const createStudent = catchAsync(async (req, res, next) => {
-  // checking member role
+  // checking member role and updating rollnumber as "0000" to identify as member
   if (req.body?.role !== "student") {
-    if (req.body?.rollNumber) req.body.rollNumber = null;
+    req.body["rollNumber"] = "0000";
   }
+  if (req.body?.role === "student") {
+    if (!req.body?.rollNumber) {
+      return next(new AppError("RollNumber is required", 400));
+    }
+  }
+  // checking all the details are filled
+  if (!req.body.name || !req.body.email)
+    return next(new AppError("Some Field is required", 400));
+
+  if (req.password) req.password = await hash(generateOtp());
   const student = await Student.create(req.body);
   return res.status(201).json(student);
 });
