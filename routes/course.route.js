@@ -1,19 +1,20 @@
-const express = require('express');
+const express = require("express");
 const {
   createCourse,
   getCourse,
   updateCourse,
   deleteCourse,
-} = require('../controllers/course');
-const { upload } = require('../lib/multer');
+  getCourseById,
+} = require("../controllers/course");
+const { upload } = require("../lib/multer");
 
 const router = express.Router();
 
-router.route('/').get(getCourse).post(upload().single('image'), createCourse);
+router.route("/").get(getCourse).post(upload().single("image"), createCourse);
 
 router
-  .route('/:id')
-  .put(upload().single('image'), updateCourse)
-  .delete(deleteCourse);
-
+  .route("/:id")
+  .put(upload().single("image"), updateCourse)
+  .delete(deleteCourse)
+  .get(getCourseById);
 module.exports = router;
