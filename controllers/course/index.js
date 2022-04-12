@@ -36,8 +36,20 @@ const getCourse = catchAsync(async (req, res) => {
 // get course by id
 const getCourseById = catchAsync(async (req, res) => {
   const filters = { isDeleted: false };
-  const course = await Course.findById(req.params?.id, { filters });
+  const course = await Course.findById(req.params?.id, { filters }).lean();
   if (!course) return next(new AppError('Course not found', 404));
+
+  const videoCount = Video.countDocuments({
+    course: req.params.id,
+  });
+  const materialCount = Material.countDocuments({
+    course: req.params.id,
+  });
+
+  const count = await Promise.all([videoCount, materialCount]);
+
+  course.count = count;
+  console.log(course);
   return res.status(200).json(course);
 });
 
@@ -64,25 +76,10 @@ const updateCourse = catchAsync(async (req, res, next) => {
   return res.status(200).json(course);
 });
 
-const getCourseMetaData = catchAsync(async (req, res, next) => {
-  console.log(req.params);
-  const videoCount = Video.countDocuments({
-    course: req.params.id,
-  });
-  const materialCount = Material.countDocuments({
-    course: req.params.id,
-  });
-
-  const count = await Promise.all([videoCount, materialCount]);
-
-  return res.status(200).json(count);
-});
-
 module.exports = {
   createCourse,
   getCourse,
   getCourseById,
   deleteCourse,
   updateCourse,
-  getCourseMetaData,
 };
