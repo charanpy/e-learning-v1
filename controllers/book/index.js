@@ -40,7 +40,7 @@ const getBooks = catchAsync(async (req, res) => {
   }
 
   if (req.query.accessCode) {
-    filters.accessCode = new RegExp(req.query.accessCode.toLowerCase());
+    filters.accessCode = req.query.accessCode.toLowerCase();
   }
 
   if (req.query.category) {
