@@ -17,10 +17,10 @@ const BookSchema = new mongoose.Schema(
       required: getRequiredFieldMessage("Access Code"),
       unique: [true, "Access Code Already Exist"],
     },
-    availability: {
-      type: Number,
-      default: 1,
-    },
+    // availability: {
+    //   type: Number,
+    //   default: 1,
+    // },
     category: {
       type: Array,
       required: getRequiredFieldMessage("Category"),
@@ -36,10 +36,10 @@ const BookSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Author",
     },
-    course: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Course",
-    },
+    // course: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Course",
+    // },
     price: {
       type: Number,
       required: getRequiredFieldMessage("Price"),
@@ -52,7 +52,7 @@ const BookSchema = new mongoose.Schema(
       type: String,
       required: getRequiredFieldMessage("Language"),
     },
-    totalBook: {
+    totalBooks: {
       type: Number,
       required: getRequiredFieldMessage("Total Book Number"),
     },

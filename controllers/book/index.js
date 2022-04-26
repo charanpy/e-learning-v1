@@ -10,7 +10,7 @@ const createBook = catchAsync(async (req, res) => {
   // checking book already exist
   const doc = await Book.findOne(filters);
   if (doc) {
-    return res.status(400).json({ Message: "Use Different Access Code" });
+    return res.status(400).json({ message: "Use Different Access Code" });
   }
   const book = await Book.create(req.body);
   return res.status(201).json("Created");
