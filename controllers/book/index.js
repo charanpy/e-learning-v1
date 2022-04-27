@@ -10,7 +10,7 @@ const createBook = catchAsync(async (req, res) => {
   // checking book already exist
   const doc = await Book.findOne(filters);
   if (doc) {
-    return res.status(400).json({ Message: "Use Different Access Code" });
+    return res.status(400).json({ message: "Use Different Access Code" });
   }
   const book = await Book.create(req.body);
   return res.status(201).json("Created");
@@ -20,13 +20,13 @@ const createBook = catchAsync(async (req, res) => {
 const updateBook = catchAsync(async (req, res) => {
   const updateData = await Book.findOneAndUpdate(
     {
-      id: req.body.id,
+      _id: req.params.id,
       isDeleted: false,
     },
     req.body,
     { new: true }
   );
-  return res.status(400).json("Updated Successfully");
+  return res.status(200).json("Updated Successfully");
 });
 
 const getBooks = catchAsync(async (req, res) => {
@@ -40,7 +40,7 @@ const getBooks = catchAsync(async (req, res) => {
   }
 
   if (req.query.accessCode) {
-    filters.accessCode = new RegExp(req.query.accessCode.toLowerCase());
+    filters.accessCode = req.query.accessCode.toLowerCase();
   }
 
   if (req.query.category) {
@@ -58,7 +58,7 @@ const getBooks = catchAsync(async (req, res) => {
 
 // delete Book
 const deleteBook = catchAsync(async (req, res, next) => {
-  const book = await Book.findOneAndUpdate(
+  const book = await Book.findByIdAndUpdate(
     req.params.id,
     { isDeleted: true },
     { new: true }
@@ -68,7 +68,7 @@ const deleteBook = catchAsync(async (req, res, next) => {
 });
 
 const incrementVisitCount = catchAsync(async (req, res) => {
-  const book = await Book.findOneAndUpdate(req?.params?.id, {
+  const book = await Book.findByIdAndUpdate(req?.params?.id, {
     $inc: { visitor: 1 },
   });
 
@@ -76,7 +76,7 @@ const incrementVisitCount = catchAsync(async (req, res) => {
 });
 
 const getBookById = catchAsync(async (req, res) => {
-  const book = await Book.findOne(req.params.id);
+  const book = await Book.findOne({ _id: req.params.id });
   return res.status(200).json(book);
 });
 
