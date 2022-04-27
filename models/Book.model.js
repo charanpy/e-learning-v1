@@ -22,7 +22,7 @@ const BookSchema = new mongoose.Schema(
     //   default: 1,
     // },
     category: {
-      type: Array,
+      type: String,
       required: getRequiredFieldMessage("Category"),
     },
     publishedYear: {
