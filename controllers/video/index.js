@@ -1,15 +1,14 @@
-const Video = require('../../models/Videos.model');
-const catchAsync = require('../../lib/catchAsync');
-const { uploadFileHelper, getSignedUrl } = require('../../lib/s3');
+const Video = require("../../models/Videos.model");
+const catchAsync = require("../../lib/catchAsync");
+const { uploadFileHelper, getSignedUrl } = require("../../lib/s3");
 
 // creating video
 const createVideo = catchAsync(async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: 'Please select one video file' });
-  }
-  const video = await uploadFileHelper(req?.file, 'video');
-  if (video) {
-    req.body['video'] = video;
+  if (req.file) {
+    const videoTumbnail = await uploadFileHelper(req?.file, "videoTumbnail");
+    if (videoTumbnail) {
+      req.body["videoTumbnail"] = videoTumbnail;
+    }
   }
   const doc = await Video.create(req.body);
   return res.status(201).json(doc);
