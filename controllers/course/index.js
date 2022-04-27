@@ -39,10 +39,10 @@ const getCourseById = catchAsync(async (req, res) => {
   const course = await Course.findById(req.params?.id, { filters }).lean();
   if (!course) return next(new AppError('Course not found', 404));
 
-  const videoCount = Video.countDocuments({
+  const videoCount = Video.find({
     course: req.params.id,
   });
-  const materialCount = Material.countDocuments({
+  const materialCount = Material.find({
     course: req.params.id,
   });
 
