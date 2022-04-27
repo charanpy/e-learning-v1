@@ -45,7 +45,7 @@ const deleteVideo = catchAsync(async (req, res) => {
 const getVideoUploadUrl = catchAsync(async (req, res) => {
   const { fileName } = req.body;
 
-  const url = await getSignedUrl(`course/${fileName}`);
+  const url = await getSignedUrl(`video/${fileName}`);
 
   return res.status(200).json({ url });
 });
