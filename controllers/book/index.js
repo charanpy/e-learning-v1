@@ -1,5 +1,6 @@
 const Book = require("../../models/Book.model");
 const catchAsync = require("../../lib/catchAsync");
+const booksCategory = require("./book-category.controller");
 
 // create book api
 const createBook = catchAsync(async (req, res) => {
@@ -91,6 +92,13 @@ const getBookByCode = catchAsync(async (req, res, next) => {
   return res.status(200).json(book);
 });
 
+// books category
+
+const getBooksCategory = catchAsync(async (req, res) => {
+  const categoryList = booksCategory.sort();
+  return res.status(200).json(categoryList);
+});
+
 module.exports = {
   createBook,
   updateBook,
@@ -99,4 +107,5 @@ module.exports = {
   getBookByCode,
   deleteBook,
   incrementVisitCount,
+  getBooksCategory
 };
