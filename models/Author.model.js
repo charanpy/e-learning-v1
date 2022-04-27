@@ -1,8 +1,14 @@
 const mongoose = require('mongoose');
 const getRequiredFieldMessage = require('../errors/error-handling');
+const { v4: uuidv4 } = require("uuid");
 
 const AuthorSchema = new mongoose.Schema(
   {
+    id: {
+      type: String,
+      default: uuidv4,
+      unique: true,
+    },
     authorName: {
       type: String,
       required: getRequiredFieldMessage('Author Name'),
@@ -10,7 +16,6 @@ const AuthorSchema = new mongoose.Schema(
     },
     authorEmail: {
       type: String,
-      unique: [true, 'Invalid Email'],
     },
   },
   {
