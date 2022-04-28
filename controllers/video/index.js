@@ -4,10 +4,11 @@ const { uploadFileHelper, getSignedUrl } = require("../../lib/s3");
 
 // creating video
 const createVideo = catchAsync(async (req, res) => {
+  console.log(req.file, 'request file', req.body);
   if (req.file) {
-    const videoTumbnail = await uploadFileHelper(req?.file, "videoTumbnail");
-    if (videoTumbnail) {
-      req.body["videoTumbnail"] = videoTumbnail;
+    const videoThumbnail = await uploadFileHelper(req?.file, "videoThumbnail");
+    if (videoThumbnail) {
+      req.body["videoThumbnail"] = videoThumbnail;
     }
   }
   const doc = await Video.create(req.body);

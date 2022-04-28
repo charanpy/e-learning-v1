@@ -27,7 +27,7 @@ const VideoSchema = new mongoose.Schema(
     videoDuration: {
       type: String,
     },
-    videoTumbnail: {
+    videoThumbnail: {
       type: FileSchema,
     },
     watchCount: {
