@@ -1,18 +1,20 @@
-const express = require("express");
+const express = require('express');
 const {
   createVideo,
   getVideos,
   getVideoById,
   getDeletedVideos,
   deleteVideo,
-} = require("../controllers/video");
+  getVideoUploadUrl,
+} = require('../controllers/video');
 
 const router = express.Router();
-const { upload } = require("../lib/multer");
+const { upload } = require('../lib/multer');
 
-router.route("/").post(upload().single("video"), createVideo);
-router.route("/").get(getVideos);
-router.route("/:id").get(getVideoById).delete(deleteVideo);
-router.route("/deleted").get(getDeletedVideos);
+router.route('/').post(upload().single('video'), createVideo);
+router.route('/upload').post(getVideoUploadUrl);
+router.route('/').get(getVideos);
+router.route('/:id').get(getVideoById).delete(deleteVideo);
+router.route('/deleted').get(getDeletedVideos);
 
 module.exports = router;

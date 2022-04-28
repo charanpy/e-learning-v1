@@ -1,15 +1,15 @@
-const Video = require("../../models/Videos.model");
-const catchAsync = require("../../lib/catchAsync");
-const { uploadFileHelper } = require("../../lib/s3");
+const Video = require('../../models/Videos.model');
+const catchAsync = require('../../lib/catchAsync');
+const { uploadFileHelper, getSignedUrl } = require('../../lib/s3');
 
 // creating video
 const createVideo = catchAsync(async (req, res) => {
   if (!req.file) {
-    return res.status(400).json({ message: "Please select one video file" });
+    return res.status(400).json({ message: 'Please select one video file' });
   }
-  const video = await uploadFileHelper(req?.file, "video");
+  const video = await uploadFileHelper(req?.file, 'video');
   if (video) {
-    req.body["video"] = video;
+    req.body['video'] = video;
   }
   const doc = await Video.create(req.body);
   return res.status(201).json(doc);
@@ -42,10 +42,19 @@ const deleteVideo = catchAsync(async (req, res) => {
   );
 });
 
+const getVideoUploadUrl = catchAsync(async (req, res) => {
+  const { fileName, fileType } = req.body;
+
+  const url = await getSignedUrl(`video/${fileName}`, fileType);
+
+  return res.status(200).json({ url });
+});
+
 module.exports = {
   createVideo,
   getVideos,
   getVideoById,
   deleteVideo,
   getDeletedVideos,
+  getVideoUploadUrl,
 };
