@@ -26,16 +26,12 @@ const MaterialSchema = new mongoose.Schema(
     description: {
       type: String,
     },
-    category: {
-      type: String,
-      required: getRequiredFieldMessage('Category'),
-    },
     course: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Course',
     },
-    file: {
-      type: FileSchema,
+    material: {
+      type: String,
       required: getRequiredFieldMessage('File'),
     },
   },
