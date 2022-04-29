@@ -10,8 +10,13 @@ const createStudent = catchAsync(async (req, res, next) => {
   if (req.body?.role !== "student") {
     if (req.body?.rollNumber) req.body.rollNumber = null;
   }
+  if (req.body?.role === "student") {
+    const result = await Student.findOne({ rollNumber: req.body?.rollNumber });
+    if (result)
+      return next(new AppError("Please use different Roll Number", 400));
+  }
   const student = await Student.create(req.body);
-  return res.status(201).json(student);
+  return res.status(201).json("success");
 });
 
 // geting students
@@ -148,5 +153,5 @@ module.exports = {
   getMember,
   login,
   getMe,
-  pendingRequest
+  pendingRequest,
 };
