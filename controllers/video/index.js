@@ -67,7 +67,7 @@ const getVideoUploadUrl = catchAsync(async (req, res, next) => {
 
   const fileExtension = fileName?.split('.')?.pop();
   const name = fileName?.slice(0, fileName?.lastIndexOf('.'));
-  const key = `${name || ''}${uuid()}${fileExtension}`;
+  const key = `${folder}/${name || ''}${uuid()}.${fileExtension}`;
 
   const url = await getSignedUrl(`${folder}/${fileName}`, fileType);
 
