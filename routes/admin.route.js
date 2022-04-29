@@ -6,13 +6,15 @@ const {
   deleteAdmin,
   updatePassword,
   adminLogin,
+  getMe,
 } = require('../controllers/admin');
 const { checkRole, checkToken } = require('../services/auth');
 
 const router = express.Router();
 
 router.route('/').get(checkToken, checkRole('admin'), getAdmins);
-router.route('/').post( createAdmin);
+router.route('/me').get(checkToken, checkRole('admin'), getMe);
+router.route('/').post(createAdmin);
 router.route('/login').post(adminLogin);
 
 router.route('/:id').put(checkToken, checkRole('admin'), updateAdmin);

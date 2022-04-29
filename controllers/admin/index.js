@@ -130,6 +130,16 @@ const adminLogin = catchAsync(async (req, res, next) => {
   return res.status(200).json({ user: admin, token });
 });
 
+const getMe = catchAsync(async (req, res, next) => {
+  const user = await Admin.findOne({
+    _id: req?.user?.id,
+    isDeleted: false,
+  });
+  if (!user) return next(new AppError('Not Authorized', 401));
+
+  return res.status(200).json(user);
+});
+
 module.exports = {
   createAdmin,
   updateAdmin,
@@ -137,4 +147,5 @@ module.exports = {
   deleteAdmin,
   updatePassword,
   adminLogin,
+  getMe,
 };
