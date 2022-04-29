@@ -19,7 +19,7 @@ const createStudent = catchAsync(async (req, res, next) => {
   if (!req.body.name || !req.body.email)
     return next(new AppError("Some Field is required", 400));
 
-  if (req.password) req.password = await hash(generateOtp());
+  req.body["password"] = await hash(generateOtp());
   const student = await Student.create(req.body);
   return res.status(201).json(student);
 });
