@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const getRequiredFieldMessage = require("../errors/error-handling");
+const FileSchema = require("./File.schema");
 
 const BookSchema = new mongoose.Schema(
   {
@@ -22,7 +23,7 @@ const BookSchema = new mongoose.Schema(
     //   default: 1,
     // },
     category: {
-      type: Array,
+      type: String,
       required: getRequiredFieldMessage("Category"),
     },
     publishedYear: {
@@ -71,7 +72,7 @@ const BookSchema = new mongoose.Schema(
       default: 0,
     },
     image: {
-      type: String,
+      type: FileSchema,
     },
     isDeleted: {
       type: Boolean,

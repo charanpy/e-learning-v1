@@ -16,7 +16,7 @@ const VideoSchema = new mongoose.Schema(
       lowercase: true,
     },
     video: {
-      type: FileSchema,
+      type: String,
       required: getRequiredFieldMessage("Video"),
     },
     description: {
@@ -26,6 +26,9 @@ const VideoSchema = new mongoose.Schema(
     },
     videoDuration: {
       type: String,
+    },
+    videoThumbnail: {
+      type: FileSchema,
     },
     watchCount: {
       type: Number,

@@ -1,14 +1,14 @@
-const { hash } = require("../../services/password");
 const AppError = require("../../errors/AppError");
 const catchAsync = require("../../lib/catchAsync");
 const Student = require("../../models/Students.model");
-const { generateOtp } = require("../../services/otp-generate");
+const { verify } = require("../../services/password");
+const { generate } = require("../../services/token");
 
 // creating student
 const createStudent = catchAsync(async (req, res, next) => {
-  // checking member role and updating rollnumber as "0000" to identify as member
+  // checking member role
   if (req.body?.role !== "student") {
-    req.body["rollNumber"] = "0000";
+    if (req.body?.rollNumber) req.body.rollNumber = null;
   }
   if (req.body?.role === "student") {
     if (!req.body?.rollNumber) {
@@ -104,6 +104,37 @@ const deleteStudent = catchAsync(async (req, res, next) => {
   return res.status(200).json(student);
 });
 
+const login = catchAsync(async (req, res, next) => {
+  const { email, password } = req.body;
+  if (!email || !password) return next(new AppError("Invalid credentials"));
+
+  const student = await Student.findOne({
+    email,
+    isVerified: true,
+    isDeleted: false,
+  }).lean();
+
+  if (!student) return next(new AppError("Invalid credentials"));
+  if (!(await verify(password, student?.password)))
+    return next(new AppError("Invalid credentials"));
+
+  const token = await generate({ id: student?._id, role: student?.role });
+
+  student["password"] = undefined;
+  return res.status(200).json({ student, token });
+});
+
+const getMe = catchAsync(async (req, res, next) => {
+  const user = await Student.findById({
+    _id: req?.user?.id,
+    isDeleted: false,
+    isVerified: true,
+  });
+  if (!user) return next(new AppError("Not Authorized", 401));
+
+  return res.status(200).json(user);
+});
+
 module.exports = {
   createStudent,
   deleteStudent,
@@ -111,4 +142,6 @@ module.exports = {
   updateStudent,
   dismissStudent,
   getMember,
+  login,
+  getMe,
 };

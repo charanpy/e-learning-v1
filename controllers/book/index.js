@@ -1,5 +1,8 @@
 const Book = require("../../models/Book.model");
 const catchAsync = require("../../lib/catchAsync");
+const booksCategory = require("./book-category.controller");
+const { uploadFileHelper, updateFileHelper } = require('../../lib/s3');
+const AppError = require('../../errors/AppError');
 
 // create book api
 const createBook = catchAsync(async (req, res) => {
@@ -12,12 +15,23 @@ const createBook = catchAsync(async (req, res) => {
   if (doc) {
     return res.status(400).json({ message: "Use Different Access Code" });
   }
+  // uploading image file
+  const image = await uploadFileHelper(req?.file, "book");
+  if (image) req.body["image"] = image;
+  // creating book
   const book = await Book.create(req.body);
   return res.status(201).json("Created");
 });
 
 // updating book
 const updateBook = catchAsync(async (req, res) => {
+  const book = await Book.findById(req.params?.id);
+
+  if (!book) return next(new AppError("book not found", 404));
+
+  const image = await updateFileHelper(req?.file, book?.image?.key, "book");
+  if (image) req.body["image"] = image;
+
   const updateData = await Book.findOneAndUpdate(
     {
       _id: req.params.id,
@@ -91,6 +105,13 @@ const getBookByCode = catchAsync(async (req, res, next) => {
   return res.status(200).json(book);
 });
 
+// books category
+
+const getBooksCategory = catchAsync(async (req, res) => {
+  const categoryList = booksCategory.sort();
+  return res.status(200).json(categoryList);
+});
+
 module.exports = {
   createBook,
   updateBook,
@@ -99,4 +120,5 @@ module.exports = {
   getBookByCode,
   deleteBook,
   incrementVisitCount,
+  getBooksCategory,
 };

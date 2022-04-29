@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const getRequiredFieldMessage = require("../errors/error-handling");
 const { generateOtp } = require("../services/otp-generate");
+const { hash } = require("../services/password");
 
 const StudentSchema = new mongoose.Schema(
   {
@@ -19,8 +20,9 @@ const StudentSchema = new mongoose.Schema(
     rollNumber: {
       type: String,
       required: function () {
-        return this.role === "student";
+        return !!this.role === "student";
       },
+      unique: [true, "Roll Number Should be unique"],
     },
     email: {
       type: String,
@@ -53,6 +55,11 @@ const StudentSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+StudentSchema.pre("save", async function (next) {
+  this.password = await hash(this.password);
+  next();
+});
 
 const Student = mongoose.model("Student", StudentSchema);
 

@@ -6,12 +6,14 @@ const {
   getBookByCode,
   getBookById,
   deleteBook,
+  getBooksCategory
 } = require("../controllers/book");
 const { upload } = require("../lib/multer");
 
 const router = express.Router();
 
 router.route("/").get(getBooks).post(upload().single("image"), createBook);
+router.route('/category').get(getBooksCategory);
 router
   .route("/:id")
   .put(upload().single("image"), updateBook)
