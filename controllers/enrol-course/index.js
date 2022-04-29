@@ -50,7 +50,7 @@ const getCourseEnrolRequest = catchAsync(async (req, res) => {
     filters['access'] = req.query?.pending;
   }
   if (req.query?.role) {
-    filter['role'] = req.query.role;
+    filters['role'] = req.query.role;
   }
 
   const courseEnroll = await EnrolCourse.find(filters);
