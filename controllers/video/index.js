@@ -1,14 +1,31 @@
-const Video = require("../../models/Videos.model");
-const catchAsync = require("../../lib/catchAsync");
-const { uploadFileHelper, getSignedUrl } = require("../../lib/s3");
+const Video = require('../../models/Videos.model');
+const AppError = require('../../errors/AppError');
+const catchAsync = require('../../lib/catchAsync');
+const EnrolCourse = require('../../models/EnrolCourse.model');
+const { uuid } = require('uuidv4');
+const { uploadFileHelper, getSignedUrl } = require('../../lib/s3');
+
+const getVideoForCourse = catchAsync(async (req, res, next) => {
+  const isEnrolled = await EnrolCourse({
+    course: req.params?.courseId,
+    user: req?.user?.id,
+    access: true,
+  });
+
+  if (!isEnrolled) return next(new AppError('Unauthorized', 401));
+
+  const videos = await Video.find({ course: req.params?.courseId });
+
+  return res.status(200).json(videos);
+});
 
 // creating video
 const createVideo = catchAsync(async (req, res) => {
   console.log(req.file, 'request file', req.body);
   if (req.file) {
-    const videoThumbnail = await uploadFileHelper(req?.file, "videoThumbnail");
+    const videoThumbnail = await uploadFileHelper(req?.file, 'videoThumbnail');
     if (videoThumbnail) {
-      req.body["videoThumbnail"] = videoThumbnail;
+      req.body['videoThumbnail'] = videoThumbnail;
     }
   }
   const doc = await Video.create(req.body);
@@ -42,12 +59,19 @@ const deleteVideo = catchAsync(async (req, res) => {
   );
 });
 
-const getVideoUploadUrl = catchAsync(async (req, res) => {
-  const { fileName, fileType } = req.body;
+const acceptedFolder = ['course', 'materials'];
+const getVideoUploadUrl = catchAsync(async (req, res, next) => {
+  const { fileName, fileType, folder } = req.body;
+  if (!acceptedFolder.includes(folder) || !fileName || !fileType)
+    return next(new AppError('Invalid folder path', 400));
 
-  const url = await getSignedUrl(`video/${fileName}`, fileType);
+  const fileExtension = fileName?.split('.')?.pop();
+  const name = fileName?.slice(0, fileName?.lastIndexOf('.'));
+  const key = `${name || ''}${uuid()}${fileExtension}`;
 
-  return res.status(200).json({ url });
+  const url = await getSignedUrl(`${folder}/${fileName}`, fileType);
+
+  return res.status(200).json({ key, url });
 });
 
 module.exports = {
@@ -57,4 +81,5 @@ module.exports = {
   deleteVideo,
   getDeletedVideos,
   getVideoUploadUrl,
+  getVideoForCourse,
 };
