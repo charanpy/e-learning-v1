@@ -15,7 +15,6 @@ const getVideoForCourse = catchAsync(async (req, res, next) => {
   if (!isEnrolled) return next(new AppError('Unauthorized', 401));
 
   const videos = await Video.find({ course: req.params?.courseId });
-
   return res.status(200).json(videos);
 });
 

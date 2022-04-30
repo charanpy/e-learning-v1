@@ -68,7 +68,6 @@ const getEnrolCourseById = catchAsync(async (req, res) => {
   const course = await EnrolCourse.findOne({
     course: req.params?.id,
     user: req?.user?.id,
-    access: true,
   });
 
   return res.status(200).json(course);
