@@ -18,6 +18,8 @@ const EnrolCourseSchema = new mongoose.Schema({
   },
 });
 
+EnrolCourseSchema.index({ user: 1, course: 1 }, { unique: true });
+
 const EnrolCourse = mongoose.model('EnrolCourse', EnrolCourseSchema);
 
 module.exports = EnrolCourse;

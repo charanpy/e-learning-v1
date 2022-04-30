@@ -8,10 +8,16 @@ const requestCourseEnrol = catchAsync(async (req, res, next) => {
 
   if (!courseId) return next(new AppError('Course is required'), 400);
 
+  const isEnrolled = await EnrolCourse.findOne({
+    course: courseId,
+    user: req.user?.id,
+  });
+
+  if (isEnrolled) return next(new AppError('Course Already Requested'));
+
   const course = await Course.findOne({ _id: courseId, isDeleted: false });
 
   if (!course) return next(new AppError('No course found', 404));
-  console.log(req.user);
   const requestedCourse = await EnrolCourse.create({
     course: courseId,
     user: req?.user?.id,
