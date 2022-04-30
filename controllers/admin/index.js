@@ -5,6 +5,8 @@ const catchAsync = require('../../lib/catchAsync');
 const { sendEmail } = require('../../services/email');
 const { generate } = require('../../services/token');
 const { verify } = require('../../services/password');
+const AppError = require('../../errors/AppError');
+
 // creating admin
 const createAdmin = catchAsync(async (req, res, next) => {
   const filters = {
