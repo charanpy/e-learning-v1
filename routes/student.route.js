@@ -10,6 +10,7 @@ const {
   getMe,
   pendingRequest,
   approveStudent,
+  getStudentByRollNumber
 } = require("../controllers/student");
 const { checkToken, checkRole } = require("../services/auth");
 
@@ -24,5 +25,8 @@ router.route("/pending-request").get(pendingRequest);
 router.route("/approve-student/:id").put(approveStudent);
 router.route("/dismiss-student/:id").delete(dismissStudent);
 router.route("/:id").delete(deleteStudent).put(updateStudent);
+router
+  .route("/rollNumber/:rollNumber")
+  .get(checkToken, checkRole("admin"), getStudentByRollNumber);
 
 module.exports = router;

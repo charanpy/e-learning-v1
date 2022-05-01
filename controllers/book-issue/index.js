@@ -1,23 +1,23 @@
 const catchAsync = require("../../lib/catchAsync");
 const BookIssue = require("../../models/book-issue.model");
-const Book = require("../../models/book-issue.model");
+const Book = require("../../models/Book.model");
 const Student = require("../../models/Students.model");
 
-// creating book issued request
+// issue book
 const createBookIssue = catchAsync(async (req, res) => {
-  // checking book count
+  const studentId = req.body.studentId;
+  const bookId = req.body.bookId;
+  // checking student
   const student = await Student.findOne({
-    _id: req.body.studentId,
+    _id: studentId,
     isDeleted: false,
     role: "student",
   });
-  if (!student) {
-    return res.status(400).json({ message: "Student Not Found" });
-  }
-
+  if (!student) return res.status(400).json({ message: "Student Not Found" });
+  // checking already taken
   const book = await BookIssue.findOne({
-    bookId: req.body.bookId,
-    studentId: req.body.studentId,
+    bookId: bookId,
+    studentId: studentId,
     bookReturn: false,
   });
 
@@ -26,19 +26,22 @@ const createBookIssue = catchAsync(async (req, res) => {
       .status(400)
       .json({ message: "Select Different StudentId or BookId" });
   }
+  const bookDetails = await Book.findOne({
+    _id: bookId,
+    isDeleted: false,
+  });
 
-  req.body["rollNumber"] = student.rollNumber;
-  const bookDetails = await Book.findById(req.body.bookId);
 
   if (bookDetails) {
     const bookCount = bookDetails.totalBooks;
     if (bookCount > 0) {
+      req.body["rollNumber"] = student.rollNumber;
       req.body["accessCode"] = bookDetails.accessCode;
       const result = await BookIssue.create(req.body);
       // update book count
       await Book.findOneAndUpdate(
         {
-          _id: req.body.bookId,
+          _id: bookId,
         },
         {
           totalBooks: bookCount - 1,

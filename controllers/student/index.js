@@ -165,6 +165,20 @@ const getMe = catchAsync(async (req, res, next) => {
   return res.status(200).json(user);
 });
 
+// student buy roll number
+const getStudentByRollNumber = catchAsync(async (req, res) => {
+  const filters = {
+    rollNumber: req.params?.rollNumber,
+    isDeleted: false,
+    role: "student",
+  };
+  const student = await Student.findOne(filters, { password: false });
+  if (!student) {
+    return res.status(400).json({ message: "Student Not Found" });
+  }
+  return res.status(200).json(student);
+});
+
 module.exports = {
   createStudent,
   deleteStudent,
@@ -176,4 +190,5 @@ module.exports = {
   getMe,
   pendingRequest,
   approveStudent,
+  getStudentByRollNumber
 };
