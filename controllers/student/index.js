@@ -26,16 +26,15 @@ const getStudent = catchAsync(async (req, res, next) => {
   const filters = {
     isDeleted: false,
     isVerified: true,
-    role: 'student',
   };
+  if (req.query.role) {
+    filters.role = req.query?.role;
+  }
   if (req.query.name) {
-    filters.name = req.query?.name?.toLowerCase();
+    filters.name = new RegExp(req.query?.name?.toLowerCase());
   }
   if (req.query.rollNumber) {
     filters.rollNumber = req.query?.rollNumber?.toLowerCase();
-  }
-  if (req.query.year) {
-    filters.year = req.query.year;
   }
   const student = await Student.find(filters, { password: false });
 
@@ -100,6 +99,28 @@ const dismissStudent = catchAsync(async (req, res) => {
   return res.status(200).json('Dismissed');
 });
 
+// approve student
+const approveStudent = catchAsync(async (req, res) => {
+  // checking requested student
+  const doc = await Student.findById(req?.params?.id, {
+    isVerified: false,
+  });
+  if (!doc) {
+    return res.status(400).json({ message: 'Student Not Found' });
+  }
+  // verify student
+  const student = await Student.findByIdAndUpdate(
+    req.params.id,
+    {
+      isVerified: true,
+    },
+    {
+      new: true,
+    }
+  );
+  return res.status(200).json('Verified');
+});
+
 // changing student delete status
 const deleteStudent = catchAsync(async (req, res, next) => {
   const student = await Student.findByIdAndUpdate(
@@ -111,7 +132,7 @@ const deleteStudent = catchAsync(async (req, res, next) => {
       new: true,
     }
   );
-  return res.status(200).json(student);
+  return res.status(200).json('Deleted');
 });
 
 const login = catchAsync(async (req, res, next) => {
@@ -159,10 +180,24 @@ const updateProfileImage = catchAsync(async (req, res, next) => {
   );
 
   profile['image'] = image;
+  req['image'] = image;
 
   await profile.save();
 
   return res.status(200).json(image);
+});
+// student buy roll number
+const getStudentByRollNumber = catchAsync(async (req, res) => {
+  const filters = {
+    rollNumber: req.params?.rollNumber,
+    isDeleted: false,
+    role: 'student',
+  };
+  const student = await Student.findOne(filters, { password: false });
+  if (!student) {
+    return res.status(400).json({ message: 'Student Not Found' });
+  }
+  return res.status(200).json(student);
 });
 
 module.exports = {
@@ -176,4 +211,6 @@ module.exports = {
   getMe,
   pendingRequest,
   updateProfileImage,
+  approveStudent,
+  getStudentByRollNumber,
 };

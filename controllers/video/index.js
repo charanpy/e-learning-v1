@@ -1,7 +1,6 @@
 const Video = require('../../models/Videos.model');
 const AppError = require('../../errors/AppError');
 const catchAsync = require('../../lib/catchAsync');
-const Material = require('../../models/Material.model');
 const EnrolCourse = require('../../models/EnrolCourse.model');
 const { uuid } = require('uuidv4');
 const { uploadFileHelper, getSignedUrl } = require('../../lib/s3');
@@ -60,11 +59,11 @@ const deleteVideo = catchAsync(async (req, res) => {
   );
 });
 
-const acceptedFolder = ['course', 'materials'];
+const acceptedFolder = ['video', 'materials'];
 const getVideoUploadUrl = catchAsync(async (req, res, next) => {
   const { fileName, fileType, folder } = req.body;
-  if (!acceptedFolder.includes(folder) || !fileName || !fileType)
-    return next(new AppError('Invalid folder path', 400));
+  // if (!acceptedFolder.includes(folder) || !fileName || !fileType)
+  //   return next(new AppError("Invalid folder path", 400));
 
   const fileExtension = fileName?.split('.')?.pop();
   const name = fileName?.slice(0, fileName?.lastIndexOf('.'));
