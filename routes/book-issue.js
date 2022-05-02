@@ -10,6 +10,7 @@ const {
   renewalBook,
   getStudentIssuedBook,
   getStudentReturnedBook,
+  getStudentDashboardDetails,
 } = require('../controllers/book-issue');
 const { checkToken, checkRole } = require('../services/auth');
 
@@ -20,6 +21,9 @@ router.route('/').post(
   createBookIssue
 );
 
+router
+  .route('/student')
+  .get(checkToken, checkRole('student'), getStudentDashboardDetails);
 router
   .route('/student/return-book-list')
   .get(checkToken, checkRole('student'), getStudentReturnedBook);

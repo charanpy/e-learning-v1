@@ -50,6 +50,22 @@ const acceptUserEnrollment = catchAsync(async (req, res, next) => {
   return res.status(200).json(course);
 });
 
+const rejectUserEnrollment = catchAsync(async (req, res, next) => {
+  const { courseId, userId } = req.body;
+  if (!courseId || !userId)
+    return next(new AppError('Course and user id is required'));
+
+  await EnrolCourse.findOneAndDelete({ course: courseId, user: userId });
+
+  return res.status(200).json('Deleted Successfully');
+});
+
+const getEnrolledCourse = catchAsync(async (req, res, next) => {
+  const enrolledCourses = await EnrolCourse.find({ access: true });
+
+  return res.status(200).json(enrolledCourses);
+});
+
 const getCourseEnrolRequest = catchAsync(async (req, res) => {
   const filters = {};
   if (req.query?.pending) {
@@ -79,4 +95,6 @@ module.exports = {
   acceptUserEnrollment,
   getCourseEnrolRequest,
   getEnrolCourseById,
+  rejectUserEnrollment,
+  getEnrolledCourse,
 };
