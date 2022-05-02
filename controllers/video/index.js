@@ -1,6 +1,7 @@
 const Video = require('../../models/Videos.model');
 const AppError = require('../../errors/AppError');
 const catchAsync = require('../../lib/catchAsync');
+const Material = require('../../models/Material.model');
 const EnrolCourse = require('../../models/EnrolCourse.model');
 const { uuid } = require('uuidv4');
 const { uploadFileHelper, getSignedUrl } = require('../../lib/s3');
@@ -15,7 +16,8 @@ const getVideoForCourse = catchAsync(async (req, res, next) => {
   if (!isEnrolled) return next(new AppError('Unauthorized', 401));
 
   const videos = await Video.find({ course: req.params?.courseId });
-  return res.status(200).json(videos);
+  const materials = await Material.find({ course: req.params?.courseId });
+  return res.status(200).json({ videos, materials });
 });
 
 // creating video

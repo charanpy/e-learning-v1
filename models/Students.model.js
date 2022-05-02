@@ -1,31 +1,32 @@
-const mongoose = require("mongoose");
-const getRequiredFieldMessage = require("../errors/error-handling");
-const { generateOtp } = require("../services/otp-generate");
-const { hash } = require("../services/password");
+const mongoose = require('mongoose');
+const getRequiredFieldMessage = require('../errors/error-handling');
+const { generateOtp } = require('../services/otp-generate');
+const { hash } = require('../services/password');
+const FileSchema = require('./File.schema');
 
 const StudentSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: getRequiredFieldMessage("Student Name"),
+      required: getRequiredFieldMessage('Student Name'),
     },
     role: {
       type: String,
       enum: {
-        values: ["student", "member"],
-        message: "Invalid Role",
+        values: ['student', 'member'],
+        message: 'Invalid Role',
       },
-      default: "student",
+      default: 'student',
     },
     rollNumber: {
       type: String,
       required: function () {
-        return !!this.role === "student";
+        return !!this.role === 'student';
       },
     },
     email: {
       type: String,
-      required: getRequiredFieldMessage("Email"),
+      required: getRequiredFieldMessage('Email'),
       unique: true,
     },
     password: {
@@ -34,18 +35,16 @@ const StudentSchema = new mongoose.Schema(
     },
     dob: {
       type: String,
-      required: getRequiredFieldMessage("DOB"),
+      required: getRequiredFieldMessage('DOB'),
     },
     mobileNumber: {
       type: String,
-      required: getRequiredFieldMessage("Mobile Number"),
+      required: getRequiredFieldMessage('Mobile Number'),
     },
     year: {
       type: String,
     },
-    image: {
-      type: String,
-    },
+    image: FileSchema,
     isVerified: {
       type: Boolean,
       default: false,
@@ -60,11 +59,11 @@ const StudentSchema = new mongoose.Schema(
   }
 );
 
-StudentSchema.pre("save", async function (next) {
+StudentSchema.pre('save', async function (next) {
   this.password = await hash(this.password);
   next();
 });
 
-const Student = mongoose.model("Student", StudentSchema);
+const Student = mongoose.model('Student', StudentSchema);
 
 module.exports = Student;
