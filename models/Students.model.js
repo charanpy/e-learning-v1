@@ -24,6 +24,12 @@ const StudentSchema = new mongoose.Schema(
         return !!this.role === "student";
       },
     },
+    year: {
+      type: String,
+      required: function () {
+        return !!this.role === 'student';
+      },
+    },
     email: {
       type: String,
       required: getRequiredFieldMessage("Email"),

@@ -13,6 +13,7 @@ const createStudent = catchAsync(async (req, res, next) => {
   // checking member role
   if (req.body?.role !== "student") {
     if (req.body?.rollNumber) req.body.rollNumber = null;
+    if (req.body?.year) req.body.year = null;
   }
   if (req.body?.role === "student") {
     const result = await Student.findOne({ rollNumber: req.body?.rollNumber });

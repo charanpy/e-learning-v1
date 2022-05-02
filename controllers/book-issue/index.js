@@ -1,7 +1,7 @@
-const catchAsync = require("../../lib/catchAsync");
-const BookIssue = require("../../models/book-issue.model");
-const Book = require("../../models/Book.model");
-const Student = require("../../models/Students.model");
+const catchAsync = require('../../lib/catchAsync');
+const BookIssue = require('../../models/book-issue.model');
+const Book = require('../../models/Book.model');
+const Student = require('../../models/Students.model');
 
 // issue book
 const createBookIssue = catchAsync(async (req, res) => {
@@ -11,9 +11,9 @@ const createBookIssue = catchAsync(async (req, res) => {
   const student = await Student.findOne({
     _id: studentId,
     isDeleted: false,
-    role: "student",
+    role: 'student',
   });
-  if (!student) return res.status(400).json({ message: "Student Not Found" });
+  if (!student) return res.status(400).json({ message: 'Student Not Found' });
   // checking already taken
   const book = await BookIssue.findOne({
     bookId: bookId,
@@ -24,19 +24,18 @@ const createBookIssue = catchAsync(async (req, res) => {
   if (book) {
     return res
       .status(400)
-      .json({ message: "Select Different StudentId or BookId" });
+      .json({ message: 'Select Different StudentId or BookId' });
   }
   const bookDetails = await Book.findOne({
     _id: bookId,
     isDeleted: false,
   });
 
-
   if (bookDetails) {
     const bookCount = bookDetails.totalBooks;
     if (bookCount > 0) {
-      req.body["rollNumber"] = student.rollNumber;
-      req.body["accessCode"] = bookDetails.accessCode;
+      req.body['rollNumber'] = student.rollNumber;
+      req.body['accessCode'] = bookDetails.accessCode;
       const result = await BookIssue.create(req.body);
       // update book count
       await Book.findOneAndUpdate(
@@ -50,9 +49,9 @@ const createBookIssue = catchAsync(async (req, res) => {
       );
       return res.status(201).json(result);
     }
-    return res.status(400).json({ message: "Book Not Available" });
+    return res.status(400).json({ message: 'Book Not Available' });
   }
-  return res.status(400).json({ message: "Book Not Found" });
+  return res.status(400).json({ message: 'Book Not Found' });
 });
 
 // get issued books api
@@ -70,10 +69,10 @@ const getBookIssuedList = catchAsync(async (req, res) => {
   }
 
   const data = await BookIssue.find(filters)
-    .populate("studentId", {
+    .populate('studentId', {
       password: false,
     })
-    .populate("bookId");
+    .populate('bookId');
   return res.status(200).json(data);
 });
 
@@ -84,10 +83,10 @@ const getReturnedBookList = catchAsync(async (req, res) => {
   };
 
   const data = await BookIssue.find(filters)
-    .populate("studentId", {
+    .populate('studentId', {
       password: false,
     })
-    .populate("bookId");
+    .populate('bookId');
   return res.status(200).json(data);
 });
 
@@ -106,10 +105,10 @@ const getDueBookList = catchAsync(async (req, res) => {
     filters.rollNumber = new RegExp(req.query.rollNumber.toLowerCase());
   }
   const data = await BookIssue.find(filters)
-    .populate("studentId", {
+    .populate('studentId', {
       password: false,
     })
-    .populate("bookId");
+    .populate('bookId');
   return res.status(200).json(data);
 });
 
@@ -126,7 +125,7 @@ const returnBook = catchAsync(async (req, res) => {
 
   // changing book return status
   if (!data) {
-    return res.status(400).json({ message: "Fail to Return" });
+    return res.status(400).json({ message: 'Fail to Return' });
   }
   const bookIssue = await BookIssue.findOneAndUpdate(
     { _id: req.params.id },
@@ -146,7 +145,7 @@ const renewalBook = catchAsync(async (req, res) => {
     { renewal: true },
     { new: true }
   );
-  return res.status(200).json({ message: "renewed" });
+  return res.status(200).json({ message: 'renewed' });
 });
 
 const getStudentReturnedBook = catchAsync(async (req, res) => {
@@ -155,7 +154,7 @@ const getStudentReturnedBook = catchAsync(async (req, res) => {
     studentId: req?.user?.id,
   };
 
-  const data = await BookIssue.find(filters).populate("bookId");
+  const data = await BookIssue.find(filters).populate('bookId');
   return res.status(200).json(data);
 });
 
@@ -165,7 +164,23 @@ const getStudentIssuedBook = catchAsync(async (req, res) => {
     studentId: req?.user?.id,
   };
 
-  const data = await BookIssue.find(filters).populate("bookId");
+  const data = await BookIssue.find(filters).populate('bookId');
+  return res.status(200).json(data);
+});
+
+const getStudentDashboardDetails = catchAsync(async (req, res, next) => {
+  const bookCount = Book.countDocuments({ isDeleted: false });
+  const returnedBook = BookIssue.countDocuments({
+    studentId: req.user.id,
+    bookReturn: true,
+  });
+  const issuedBook = BookIssue.countDocuments({
+    studentId: req.user.id,
+    bookReturn: false,
+  });
+
+  const data = await Promise.all([bookCount, returnedBook, issuedBook]);
+  console.log(data);
   return res.status(200).json(data);
 });
 
@@ -178,4 +193,5 @@ module.exports = {
   renewalBook,
   getStudentIssuedBook,
   getStudentReturnedBook,
+  getStudentDashboardDetails,
 };
