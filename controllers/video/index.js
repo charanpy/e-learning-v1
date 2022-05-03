@@ -1,10 +1,10 @@
-const Video = require('../../models/Videos.model');
-const AppError = require('../../errors/AppError');
-const catchAsync = require('../../lib/catchAsync');
-const EnrolCourse = require('../../models/EnrolCourse.model');
-const { uuid } = require('uuidv4');
-const { uploadFileHelper, getSignedUrl } = require('../../lib/s3');
-const Material = require('../../models/Material.model');
+const Video = require("../../models/Videos.model");
+const AppError = require("../../errors/AppError");
+const catchAsync = require("../../lib/catchAsync");
+const EnrolCourse = require("../../models/EnrolCourse.model");
+const { uuid } = require("uuidv4");
+const { uploadFileHelper, getSignedUrl } = require("../../lib/s3");
+const Material = require("../../models/Material.model");
 
 const getVideoForCourse = catchAsync(async (req, res, next) => {
   const isEnrolled = await EnrolCourse({
@@ -13,7 +13,7 @@ const getVideoForCourse = catchAsync(async (req, res, next) => {
     access: true,
   });
 
-  if (!isEnrolled) return next(new AppError('Unauthorized', 401));
+  if (!isEnrolled) return next(new AppError("Unauthorized", 401));
 
   const videos = await Video.find({ course: req.params?.courseId });
   const materials = await Material.find({ course: req.params?.courseId });
@@ -22,11 +22,11 @@ const getVideoForCourse = catchAsync(async (req, res, next) => {
 
 // creating video
 const createVideo = catchAsync(async (req, res) => {
-  console.log(req.file, 'request file', req.body);
+  console.log(req.file, "request file", req.body);
   if (req.file) {
-    const videoThumbnail = await uploadFileHelper(req?.file, 'videoThumbnail');
+    const videoThumbnail = await uploadFileHelper(req?.file, "videoThumbnail");
     if (videoThumbnail) {
-      req.body['videoThumbnail'] = videoThumbnail;
+      req.body["videoThumbnail"] = videoThumbnail;
     }
   }
   const doc = await Video.create(req.body);
@@ -60,17 +60,17 @@ const deleteVideo = catchAsync(async (req, res) => {
   );
 });
 
-const acceptedFolder = ['video', 'materials'];
+const acceptedFolder = ["video", "materials"];
 const getVideoUploadUrl = catchAsync(async (req, res, next) => {
   const { fileName, fileType, folder } = req.body;
   // if (!acceptedFolder.includes(folder) || !fileName || !fileType)
   //   return next(new AppError("Invalid folder path", 400));
 
-  const fileExtension = fileName?.split('.')?.pop();
-  const name = fileName?.slice(0, fileName?.lastIndexOf('.'));
-  const key = `${folder}/${name || ''}${uuid()}.${fileExtension}`;
+  const fileExtension = fileName?.split(".")?.pop();
+  const name = fileName?.slice(0, fileName?.lastIndexOf("."));
+  const key = `${folder}/${name || ""}${uuid()}.${fileExtension}`;
 
-  const url = await getSignedUrl(`${folder}/${fileName}`, fileType);
+  const url = await getSignedUrl(key, fileType);
 
   return res.status(200).json({ key, url });
 });

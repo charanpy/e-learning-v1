@@ -41,10 +41,10 @@ const getCourseById = catchAsync(async (req, res) => {
 
   const videoCount = Video.find({
     course: req.params.id,
-  }).select('_id title');
+  });
   const materialCount = Material.find({
     course: req.params.id,
-  }).select('_id title');
+  });
 
   const count = await Promise.all([videoCount, materialCount]);
 

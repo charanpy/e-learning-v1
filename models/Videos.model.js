@@ -16,7 +16,7 @@ const VideoSchema = new mongoose.Schema(
       lowercase: true,
     },
     video: {
-      type: String,
+      type: FileSchema,
       required: getRequiredFieldMessage("Video"),
     },
     description: {
