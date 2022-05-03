@@ -31,7 +31,7 @@ const MaterialSchema = new mongoose.Schema(
       ref: 'Course',
     },
     material: {
-      type: String,
+      type: FileSchema,
       required: getRequiredFieldMessage('File'),
     },
   },
