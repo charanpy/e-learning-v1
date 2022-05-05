@@ -4,6 +4,7 @@ const { uploadFileHelper, updateFileHelper } = require('../../lib/s3');
 const Course = require('../../models/Course.model');
 const Video = require('../../models/Videos.model');
 const Material = require('../../models/Material.model');
+const paginate = require('../../lib/paginate');
 
 const createCourse = catchAsync(async (req, res, next) => {
   const { courseTitle, description, code, courseDuration } = req.body;
@@ -23,14 +24,25 @@ const createCourse = catchAsync(async (req, res, next) => {
 });
 
 const getCourse = catchAsync(async (req, res) => {
+  const { skip, limit } = paginate(req);
+
+  let count = 0;
+
   const filters = { isDeleted: false };
   if (req.query?.code) filters['code'] = req.query?.code;
   if (req.query?.courseTitle)
     filters['courseTitle'] = new RegExp(req.query?.courseTitle);
 
-  const courses = await Course.find(filters).sort({ createdAt: -1 });
+  if (!req.query?.page || +req.query?.page === 1) {
+    count = await Course.countDocuments(filters);
+  }
 
-  return res.status(200).json(courses);
+  const courses = await Course.find(filters)
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  return res.status(200).json({ courses, count });
 });
 
 // get course by id

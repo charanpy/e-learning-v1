@@ -19,6 +19,9 @@ const bookRoutes = require('./routes/book.route');
 const bookIssueRoutes = require('./routes/book-issue');
 const adminRoutes = require('./routes/admin.route');
 const enrolCourseRoutes = require('./routes/enrolCourse.route');
+const categoryRoutes = require('./routes/category.route');
+const Author = require('./models/Author.model');
+const Book = require('./models/Book.model');
 
 app.use('/api/v2/author', authorRoutes);
 app.use('/api/v2/course', courseRoutes);
@@ -29,6 +32,7 @@ app.use('/api/v2/book', bookRoutes);
 app.use('/api/v2/book-issue', bookIssueRoutes);
 app.use('/api/v2/admin', adminRoutes);
 app.use('/api/v2/enrol-course', enrolCourseRoutes);
+app.use('/api/v2/category', categoryRoutes);
 
 app.use('*', (_, res) => {
   return res.status(404).json({ message: 'Requested resource not found' });
