@@ -1,4 +1,5 @@
 const AppError = require('../../errors/AppError');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const catchAsync = require('../../lib/catchAsync');
 const { uploadFileHelper, updateFileHelper } = require('../../lib/s3');
 const Course = require('../../models/Course.model');
@@ -88,10 +89,44 @@ const updateCourse = catchAsync(async (req, res, next) => {
   return res.status(200).json(course);
 });
 
+const createCheckoutSession = catchAsync(async (req, res, next) => {
+  const { courseId } = req.body;
+
+  if (!courseId) return next(new AppError('Course Id is required'));
+
+  const course = await Course.findById(courseId);
+  if (!course || !course?.price)
+    return next(new AppError('Course Not found', 404));
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ['card'],
+    line_items: [
+      {
+        price_data: {
+          currency: 'inr',
+          product_data: {
+            name: course?.courseTitle,
+            description: course?.description,
+            images: [course?.image?.url],
+          },
+          unit_amount_decimal: course?.price * 100,
+        },
+        quantity: 1,
+      },
+    ],
+    mode: 'payment',
+    success_url: 'http://localhost:3000/stripepaymentsuccess',
+    cancel_url: 'http://localhost:3000/stripepaymentcancel',
+    customer_email: req?.user?.email,
+  });
+
+  return res.status(200).json(session?.id);
+});
+
 module.exports = {
   createCourse,
   getCourse,
   getCourseById,
   deleteCourse,
   updateCourse,
+  createCheckoutSession,
 };

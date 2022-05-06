@@ -34,6 +34,26 @@ app.use('/api/v2/admin', adminRoutes);
 app.use('/api/v2/enrol-course', enrolCourseRoutes);
 app.use('/api/v2/category', categoryRoutes);
 
+app.post(
+  '/webhook',
+  express.raw({ type: 'application/json' }),
+  (request, response) => {
+    const payload = request.body;
+    // const sig = request.headers['stripe-signature'];
+
+    // let event;
+
+    // try {
+    //   event = stripe.webhooks.constructEvent(payload, sig, endpointSecret);
+    // } catch (err) {
+    //   return response.status(400).send(`Webhook Error: ${err.message}`);
+    // }
+    console.log('Payment  ');
+
+    response.status(200);
+  }
+);
+
 app.use('*', (_, res) => {
   return res.status(404).json({ message: 'Requested resource not found' });
 });

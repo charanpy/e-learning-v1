@@ -29,7 +29,7 @@ const BookSchema = new mongoose.Schema(
       },
     ],
     publishedYear: {
-      type: String,
+      type: Date,
       required: getRequiredFieldMessage('Publish Year'),
     },
     publisher: {
