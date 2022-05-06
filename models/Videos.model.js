@@ -1,7 +1,7 @@
-const mongoose = require("mongoose");
-const getRequiredFieldMessage = require("../errors/error-handling");
-const { v4: uuidv4 } = require("uuid");
-const FileSchema = require("./File.schema");
+const mongoose = require('mongoose');
+const getRequiredFieldMessage = require('../errors/error-handling');
+const { v4: uuidv4 } = require('uuid');
+const FileSchema = require('./File.schema');
 
 const VideoSchema = new mongoose.Schema(
   {
@@ -12,7 +12,7 @@ const VideoSchema = new mongoose.Schema(
     },
     title: {
       type: String,
-      required: getRequiredFieldMessage("Video Title"),
+      required: getRequiredFieldMessage('Video Title'),
       lowercase: true,
     },
     video: {
@@ -21,7 +21,7 @@ const VideoSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      required: getRequiredFieldMessage(" Video Description "),
+      required: getRequiredFieldMessage(' Video Description '),
       lowercase: true,
     },
     videoDuration: {
@@ -35,11 +35,11 @@ const VideoSchema = new mongoose.Schema(
     },
     priority: {
       type: Number,
-      required: getRequiredFieldMessage("Priority"),
+      required: getRequiredFieldMessage('Priority'),
     },
     course: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Course",
+      ref: 'Course',
     },
     isDeleted: {
       type: Boolean,
@@ -51,6 +51,6 @@ const VideoSchema = new mongoose.Schema(
   }
 );
 
-const Video = mongoose.model("Video", VideoSchema);
+const Video = mongoose.model('Video', VideoSchema);
 
 module.exports = Video;

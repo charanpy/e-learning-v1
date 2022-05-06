@@ -1,12 +1,12 @@
-const mongoose = require("mongoose");
-const getRequiredFieldMessage = require("../errors/error-handling");
-const FileSchema = require("./File.schema");
+const mongoose = require('mongoose');
+const getRequiredFieldMessage = require('../errors/error-handling');
+const FileSchema = require('./File.schema');
 
 const BookSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: getRequiredFieldMessage("Book Title"),
+      required: getRequiredFieldMessage('Book Title'),
       lowercase: true,
     },
     description: {
@@ -15,27 +15,29 @@ const BookSchema = new mongoose.Schema(
     },
     accessCode: {
       type: Number,
-      required: getRequiredFieldMessage("Access Code"),
-      unique: [true, "Access Code Already Exist"],
+      required: getRequiredFieldMessage('Access Code'),
+      unique: [true, 'Access Code Already Exist'],
     },
     // availability: {
     //   type: Number,
     //   default: 1,
     // },
-    category: {
-      type: String,
-      required: getRequiredFieldMessage("Category"),
-    },
+    category: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+      },
+    ],
     publishedYear: {
       type: String,
-      required: getRequiredFieldMessage("Publish Year"),
+      required: getRequiredFieldMessage('Publish Year'),
     },
     publisher: {
       type: String,
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Author",
+      ref: 'Author',
     },
     // course: {
     //   type: mongoose.Schema.Types.ObjectId,
@@ -43,19 +45,19 @@ const BookSchema = new mongoose.Schema(
     // },
     price: {
       type: Number,
-      required: getRequiredFieldMessage("Price"),
+      required: getRequiredFieldMessage('Price'),
     },
     edition: {
       type: Number,
-      required: getRequiredFieldMessage("Edition"),
+      required: getRequiredFieldMessage('Edition'),
     },
     language: {
       type: String,
-      required: getRequiredFieldMessage("Language"),
+      required: getRequiredFieldMessage('Language'),
     },
     totalBooks: {
       type: Number,
-      required: getRequiredFieldMessage("Total Book Number"),
+      required: getRequiredFieldMessage('Total Book Number'),
     },
     damageStatus: {
       type: String,
@@ -84,6 +86,6 @@ const BookSchema = new mongoose.Schema(
   }
 );
 
-const Book = mongoose.model("Book", BookSchema);
+const Book = mongoose.model('Book', BookSchema);
 
 module.exports = Book;

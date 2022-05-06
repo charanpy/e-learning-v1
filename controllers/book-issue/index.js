@@ -2,6 +2,7 @@ const catchAsync = require('../../lib/catchAsync');
 const BookIssue = require('../../models/book-issue.model');
 const Book = require('../../models/Book.model');
 const Student = require('../../models/Students.model');
+const paginate = require('../../lib/paginate');
 
 // issue book
 const createBookIssue = catchAsync(async (req, res) => {
@@ -149,23 +150,40 @@ const renewalBook = catchAsync(async (req, res) => {
 });
 
 const getStudentReturnedBook = catchAsync(async (req, res) => {
+  const { skip, limit } = paginate(req);
   const filters = {
     bookReturn: true,
     studentId: req?.user?.id,
   };
+  let count = 0;
+  if (!req.query?.page || +req.query?.page === 1) {
+    count = await BookIssue.countDocuments(filters);
+  }
 
-  const data = await BookIssue.find(filters).populate('bookId');
-  return res.status(200).json(data);
+  const data = await BookIssue.find(filters)
+    .populate('bookId')
+    .skip(skip)
+    .limit(limit);
+  return res.status(200).json({ data, count: count || undefined });
 });
 
 const getStudentIssuedBook = catchAsync(async (req, res) => {
+  const { skip, limit } = paginate(req);
   const filters = {
     bookReturn: false,
     studentId: req?.user?.id,
   };
 
-  const data = await BookIssue.find(filters).populate('bookId');
-  return res.status(200).json(data);
+  let count = 0;
+  if (!req.query?.page || +req.query?.page === 1) {
+    count = await BookIssue.countDocuments(filters);
+  }
+
+  const data = await BookIssue.find(filters)
+    .populate('bookId')
+    .skip(skip)
+    .limit(limit);
+  return res.status(200).json({ count, data: data || undefined });
 });
 
 const getStudentDashboardDetails = catchAsync(async (req, res, next) => {
