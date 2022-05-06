@@ -156,7 +156,7 @@ const getStudentReturnedBook = catchAsync(async (req, res) => {
     studentId: req?.user?.id,
   };
   let count = 0;
-  if (!req.query?.page || req.query?.page === 1) {
+  if (!req.query?.page || +req.query?.page === 1) {
     count = await BookIssue.countDocuments(filters);
   }
 
@@ -164,7 +164,7 @@ const getStudentReturnedBook = catchAsync(async (req, res) => {
     .populate('bookId')
     .skip(skip)
     .limit(limit);
-  return res.status(200).json({ data, count });
+  return res.status(200).json({ data, count: count || undefined });
 });
 
 const getStudentIssuedBook = catchAsync(async (req, res) => {
@@ -175,7 +175,7 @@ const getStudentIssuedBook = catchAsync(async (req, res) => {
   };
 
   let count = 0;
-  if (!req.query?.page || req.query?.page === 1) {
+  if (!req.query?.page || +req.query?.page === 1) {
     count = await BookIssue.countDocuments(filters);
   }
 
@@ -183,7 +183,7 @@ const getStudentIssuedBook = catchAsync(async (req, res) => {
     .populate('bookId')
     .skip(skip)
     .limit(limit);
-  return res.status(200).json({ count, data });
+  return res.status(200).json({ count, data: data || undefined });
 });
 
 const getStudentDashboardDetails = catchAsync(async (req, res, next) => {

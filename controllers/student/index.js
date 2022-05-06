@@ -165,9 +165,10 @@ const getMe = catchAsync(async (req, res, next) => {
     _id: req?.user?.id,
     isDeleted: false,
     isVerified: true,
-  });
+  }).lean();
   if (!user) return next(new AppError('Not Authorized', 401));
 
+  user['password'] = undefined;
   return res.status(200).json(user);
 });
 

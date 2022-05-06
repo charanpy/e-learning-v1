@@ -42,7 +42,7 @@ const getCourse = catchAsync(async (req, res) => {
     .skip(skip)
     .limit(limit);
 
-  return res.status(200).json({ courses, count });
+  return res.status(200).json({ courses, count: count || undefined });
 });
 
 // get course by id
