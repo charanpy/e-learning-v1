@@ -157,6 +157,7 @@ const login = catchAsync(async (req, res, next) => {
     id: student?._id,
     role: student?.role,
     email: student?.email,
+    year: student?.year,
   });
 
   student['password'] = undefined;

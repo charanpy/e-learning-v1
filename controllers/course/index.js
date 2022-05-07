@@ -1,11 +1,13 @@
 const AppError = require('../../errors/AppError');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const catchAsync = require('../../lib/catchAsync');
 const { uploadFileHelper, updateFileHelper } = require('../../lib/s3');
 const Course = require('../../models/Course.model');
 const Video = require('../../models/Videos.model');
 const Material = require('../../models/Material.model');
 const paginate = require('../../lib/paginate');
+const Order = require('../../models/Order.model');
+const EnrolCourse = require('../../models/EnrolCourse.model');
+const stripe = require('../../lib/stripe');
 
 const createCourse = catchAsync(async (req, res, next) => {
   const { courseTitle, description, code, courseDuration } = req.body;
@@ -94,9 +96,19 @@ const createCheckoutSession = catchAsync(async (req, res, next) => {
 
   if (!courseId) return next(new AppError('Course Id is required'));
 
-  const course = await Course.findById(courseId);
+  const course = await Course.findById(courseId).lean();
+
   if (!course || !course?.price)
     return next(new AppError('Course Not found', 404));
+
+  const isEnrolled = await EnrolCourse.findOne({
+    course: courseId,
+    user: req?.user?.id,
+    access: true,
+  });
+
+  if (isEnrolled) return next(new AppError('Course already Enrolled'));
+
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
     line_items: [
@@ -114,10 +126,30 @@ const createCheckoutSession = catchAsync(async (req, res, next) => {
       },
     ],
     mode: 'payment',
-    success_url: 'http://localhost:3000/stripepaymentsuccess',
+    success_url: `http://localhost:3000/course/${course?._id}`,
     cancel_url: 'http://localhost:3000/stripepaymentcancel',
     customer_email: req?.user?.email,
+    metadata: {
+      user: req?.user?.id,
+      course: course?._id + '',
+      title: course?.courseTitle,
+      role: req?.user?.role,
+    },
   });
+
+  const order = await Order.findOne({
+    user: req?.user?.id,
+    course: course?._id,
+  });
+
+  if (!order) {
+    await Order.create({
+      user: req?.user?.id,
+      course: course?._id,
+      status: 'pending',
+      total: course?.price,
+    });
+  }
 
   return res.status(200).json(session?.id);
 });

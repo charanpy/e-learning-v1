@@ -41,4 +41,4 @@ const LibMaterialSchema = new mongoose.Schema(
 
 const LibMaterial = mongoose.model('LibMaterial', LibMaterialSchema);
 
-module.exports = Material;
+module.exports = LibMaterial;

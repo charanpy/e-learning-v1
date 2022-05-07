@@ -3,10 +3,16 @@ const cors = require('cors');
 require('dotenv').config();
 const morgan = require('morgan');
 const errorController = require('./errors/error-controller');
-
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const app = express();
 
-app.use(express.json());
+app.use((req, res, next) => {
+  if (req.originalUrl === '/webhook') {
+    next();
+  } else {
+    express.json()(req, res, next);
+  }
+});
 app.use(cors());
 app.use(morgan('tiny'));
 
@@ -20,8 +26,9 @@ const bookIssueRoutes = require('./routes/book-issue');
 const adminRoutes = require('./routes/admin.route');
 const enrolCourseRoutes = require('./routes/enrolCourse.route');
 const categoryRoutes = require('./routes/category.route');
-const Author = require('./models/Author.model');
-const Book = require('./models/Book.model');
+const libMaterial = require('./routes/lib-material.route');
+const fileView = require('./routes/file-view.route');
+const { createOrderOnWebHookEvent } = require('./controllers/order');
 
 app.use('/api/v2/author', authorRoutes);
 app.use('/api/v2/course', courseRoutes);
@@ -33,25 +40,13 @@ app.use('/api/v2/book-issue', bookIssueRoutes);
 app.use('/api/v2/admin', adminRoutes);
 app.use('/api/v2/enrol-course', enrolCourseRoutes);
 app.use('/api/v2/category', categoryRoutes);
+app.use('/api/v2/lib-material', libMaterial);
+app.use('/api/v2/file-view', fileView);
 
 app.post(
   '/webhook',
   express.raw({ type: 'application/json' }),
-  (request, response) => {
-    const payload = request.body;
-    // const sig = request.headers['stripe-signature'];
-
-    // let event;
-
-    // try {
-    //   event = stripe.webhooks.constructEvent(payload, sig, endpointSecret);
-    // } catch (err) {
-    //   return response.status(400).send(`Webhook Error: ${err.message}`);
-    // }
-    console.log('Payment  ');
-
-    response.status(200);
-  }
+  createOrderOnWebHookEvent
 );
 
 app.use('*', (_, res) => {
