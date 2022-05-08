@@ -126,8 +126,8 @@ const createCheckoutSession = catchAsync(async (req, res, next) => {
       },
     ],
     mode: 'payment',
-    success_url: `http://localhost:3000/course/${course?._id}`,
-    cancel_url: 'http://localhost:3000/stripepaymentcancel',
+    success_url: `${process.env.STRIPE_SUCCESS}${course?._id}`,
+    cancel_url: `${process.env.STRIPE_FAILURE}${course?._id}`,
     customer_email: req?.user?.email,
     metadata: {
       user: req?.user?.id,
