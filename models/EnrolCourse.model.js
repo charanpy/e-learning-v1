@@ -17,6 +17,14 @@ const EnrolCourseSchema = new mongoose.Schema(
     role: {
       type: String,
     },
+    recentWatched: {
+      title: String,
+      lecture: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Video',
+      },
+      priority: Number,
+    },
   },
   { timestamps: true }
 );

@@ -17,6 +17,7 @@ const enrollToCourse = async (metadata) => {
     user: metadata?.user,
     course: metadata?.course,
     status: 'success',
+    purchasedAt: Date.now(),
   });
 
   return Promise.all([enrollCourse, order]);
@@ -63,7 +64,7 @@ const createOrderOnWebHookEvent = catchAsync(
       case 'checkout.session.async_payment_failed': {
         const session = event.data.object;
 
-        await enrollToCourse(session?.metadata);
+        await orderFailed(session?.metadata);
         break;
       }
       default: {

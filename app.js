@@ -28,6 +28,7 @@ const enrolCourseRoutes = require('./routes/enrolCourse.route');
 const categoryRoutes = require('./routes/category.route');
 const libMaterial = require('./routes/lib-material.route');
 const fileView = require('./routes/file-view.route');
+const completeLesson = require('./routes/completeLesson.route');
 const { createOrderOnWebHookEvent } = require('./controllers/order');
 
 app.use('/api/v2/author', authorRoutes);
@@ -42,6 +43,7 @@ app.use('/api/v2/enrol-course', enrolCourseRoutes);
 app.use('/api/v2/category', categoryRoutes);
 app.use('/api/v2/lib-material', libMaterial);
 app.use('/api/v2/file-view', fileView);
+app.use('/api/v2/complete-lesson', completeLesson);
 
 app.post(
   '/webhook',

@@ -1,7 +1,7 @@
 const AppError = require('../../errors/AppError');
 const catchAsync = require('../../lib/catchAsync');
 const FileView = require('../../models/FileView.model');
-const Material = require('../../models/Material.model');
+const Material = require('../../models/LibMaterial.model');
 
 const getFileAccess = catchAsync(async (req, res, next) => {
   const { id } = req.params;
@@ -15,12 +15,19 @@ const getFileAccess = catchAsync(async (req, res, next) => {
   // get material and check if it has restriction
   const material = await Material.findById(id);
   if (isFileAccessed) return res.status(200).json(material);
-
+  console.log(material, id);
   // if no restriction send material
-  if (!material.restrictAccess) return res.status(200).json(material);
+  if (!material?.restrictAccess) return res.status(200).json(material);
 
   // get no of student accessed
   const fileView = await FileView.find({ material: id });
+
+  console.log(
+    fileView,
+    'file',
+    material.restrictCount,
+    fileView >= material.restrictCount
+  );
 
   // check restrict count
   if (fileView.length >= material.restrictCount)
