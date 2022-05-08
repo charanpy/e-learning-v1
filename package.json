@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": "16.x"
   },
   "author": "",
   "license": "ISC",
@@ -20,6 +23,7 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.4",
     "otp-generator": "^4.0.0",
+    "stripe": "^8.222.0",
     "uuidv4": "^6.2.13"
   }
 }

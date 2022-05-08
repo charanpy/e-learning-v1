@@ -1,27 +1,27 @@
-const mongoose = require("mongoose");
-const getRequiredFieldMessage = require("../errors/error-handling");
-const FileSchema = require("./File.schema");
+const mongoose = require('mongoose');
+const getRequiredFieldMessage = require('../errors/error-handling');
+const FileSchema = require('./File.schema');
 
 const CourseSchema = new mongoose.Schema(
   {
     courseTitle: {
       type: String,
-      required: getRequiredFieldMessage("Course Title"),
+      required: getRequiredFieldMessage('Course Title'),
       lowercase: true,
     },
     code: {
       type: String,
-      required: getRequiredFieldMessage("Course code"),
-      unique: [true, "Course code should be unique"],
+      required: getRequiredFieldMessage('Course code'),
+      unique: [true, 'Course code should be unique'],
     },
     description: {
       type: String,
-      required: getRequiredFieldMessage("Course description"),
+      required: getRequiredFieldMessage('Course description'),
       lowercase: true,
     },
     courseDuration: {
       type: String,
-      required: getRequiredFieldMessage("Course Duration"),
+      required: getRequiredFieldMessage('Course Duration'),
     },
     image: {
       type: FileSchema,
@@ -39,6 +39,6 @@ const CourseSchema = new mongoose.Schema(
   }
 );
 
-const Course = mongoose.model("Course", CourseSchema);
+const Course = mongoose.model('Course', CourseSchema);
 
 module.exports = Course;

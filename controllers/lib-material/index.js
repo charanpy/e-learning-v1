@@ -1,7 +1,7 @@
-const AppError = require('../errors/AppError');
-const catchAsync = require('../lib/catchAsync');
-const { uploadFileHelper, deleteFile } = require('../lib/s3');
-const Material = require('../models/Material.model');
+const AppError = require('../../errors/AppError');
+const catchAsync = require('../../lib/catchAsync');
+const { uploadFileHelper, deleteFile } = require('../../lib/s3');
+const Material = require('../../models/LibMaterial.model');
 
 const createMaterial = catchAsync(async (req, res, next) => {
   // prevent file upload if no title
@@ -10,7 +10,7 @@ const createMaterial = catchAsync(async (req, res, next) => {
     return next(new AppError('Please Select One File', 400));
   }
   // upload file -pdf or docx with folder name materials
-  const file = await uploadFileHelper(req?.file, 'materials');
+  const file = await uploadFileHelper(req?.file, 'lib-materials');
   if (file) req.body['file'] = file;
 
   const material = await Material.create(req.body);
@@ -35,9 +35,10 @@ const getMaterial = catchAsync(async (req, res) => {
 });
 
 const getMaterialByYear = catchAsync(async (req, res, next) => {
+  console.log(req.user);
   const filters = {
     isDeleted: false,
-    preferredYear: req.user?.year,
+    preferredYear: +req.user?.year,
   };
   const exclude = {};
   if (!req?.query?.restrict) return next(new AppError('Invalid access', 400));
@@ -47,6 +48,8 @@ const getMaterialByYear = catchAsync(async (req, res, next) => {
   if (filters['restrictAccess']) {
     exclude['file'] = false;
   }
+
+  console.log(filters);
   const materials = await Material.find(filters, exclude);
 
   return res.status(200).json(materials);

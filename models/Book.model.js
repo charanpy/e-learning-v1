@@ -30,7 +30,7 @@ const BookSchema = new mongoose.Schema(
     ],
     publishedYear: {
       type: Date,
-      required: getRequiredFieldMessage("Publish Year"),
+      required: getRequiredFieldMessage('Publish Year'),
     },
     publisher: {
       type: String,

@@ -155,7 +155,12 @@ const login = catchAsync(async (req, res, next) => {
   if (!(await verify(password, student?.password)))
     return next(new AppError("Invalid credentials"));
 
-  const token = await generate({ id: student?._id, role: student?.role });
+  const token = await generate({
+    id: student?._id,
+    role: student?.role,
+    email: student?.email,
+    year: student?.year,
+  });
 
   student["password"] = undefined;
   return res.status(200).json({ student, token });
