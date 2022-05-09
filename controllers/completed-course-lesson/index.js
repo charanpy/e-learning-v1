@@ -24,9 +24,16 @@ const setMarkStatus = catchAsync(async (req, res, next) => {
     });
   }
 
-  if (req.query.status === 'mark')
-    isCompleteCourse.completed.set(lessonId, { status: 1 });
-  else isCompleteCourse.completed.set(lessonId, undefined);
+  if (
+    req.query.status === 'mark' &&
+    !isCompleteCourse?.completed?.get(lessonId)
+  ) {
+    isCompleteCourse?.completed?.set(lessonId, { status: 1 });
+    isCompleteCourse.completedCount++;
+  } else {
+    isCompleteCourse.completed.set(lessonId, undefined);
+    isCompleteCourse.completedCount--;
+  }
 
   await isCompleteCourse.save();
   return res.status(200).json(isCompleteCourse);
@@ -41,8 +48,7 @@ const getCompletedCourseLesson = catchAsync(async (req, res, next) => {
     course: courseId,
     user: req?.user?.id,
   });
-  console.log(completedLesson);
-  return res.status(200).json(completedLesson?.completed || null);
+  return res.status(200).json(completedLesson || null);
 });
 
 module.exports = {

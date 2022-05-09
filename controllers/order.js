@@ -37,6 +37,7 @@ const createOrderOnWebHookEvent = catchAsync(
     const payload = request.body;
     const sig = request.headers['stripe-signature'];
 
+    
     const event = stripe.webhooks.constructEvent(
       payload,
       sig,
