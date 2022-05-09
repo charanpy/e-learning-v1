@@ -1,4 +1,5 @@
 const catchAsync = require("../lib/catchAsync");
+const paginate = require("../lib/paginate");
 const stripe = require("../lib/stripe");
 const EnrolCourse = require("../models/EnrolCourse.model");
 const Order = require("../models/Order.model");
@@ -79,13 +80,18 @@ const createOrderOnWebHookEvent = catchAsync(
 );
 
 const getOrders = catchAsync(async (req, res, next) => {
+  const { limit, skip } = paginate(req);
+
   const filter = {};
 
   if (req.query?.status) {
     filter.status = req.query.status;
   }
 
-  const orders = await Order.find(filter).sort({ updatedAt: -1 });
+  const orders = await Order.find(filter)
+    .sort({ updatedAt: -1 })
+    .skip(skip)
+    .limit(limit);
 
   return res.status(200).json(orders);
 });

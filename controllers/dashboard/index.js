@@ -45,7 +45,7 @@ const getDashboardCountDetails = catchAsync(async (req, res, next) => {
     {
       title: "Orders",
       count: order,
-      url: "/order",
+      url: "/orders",
       bg: "d3",
     },
     {
