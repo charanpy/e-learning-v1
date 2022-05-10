@@ -1,13 +1,13 @@
-const AppError = require('../../errors/AppError');
-const catchAsync = require('../../lib/catchAsync');
-const { uploadFileHelper, updateFileHelper } = require('../../lib/s3');
-const Course = require('../../models/Course.model');
-const Video = require('../../models/Videos.model');
-const Material = require('../../models/Material.model');
-const paginate = require('../../lib/paginate');
-const Order = require('../../models/Order.model');
-const EnrolCourse = require('../../models/EnrolCourse.model');
-const stripe = require('../../lib/stripe');
+const AppError = require("../../errors/AppError");
+const catchAsync = require("../../lib/catchAsync");
+const { uploadFileHelper, updateFileHelper } = require("../../lib/s3");
+const Course = require("../../models/Course.model");
+const Video = require("../../models/Videos.model");
+const Material = require("../../models/Material.model");
+const paginate = require("../../lib/paginate");
+const Order = require("../../models/Order.model");
+const EnrolCourse = require("../../models/EnrolCourse.model");
+const stripe = require("../../lib/stripe");
 
 const createCourse = catchAsync(async (req, res, next) => {
   const { courseTitle, description, code, courseDuration } = req.body;
@@ -16,10 +16,10 @@ const createCourse = catchAsync(async (req, res, next) => {
   //   return next(new AppError('Course thumbnail is required', 400));
 
   if (!courseTitle || !description || !code || !courseDuration)
-    return next(new AppError('Please fill all fields', 400));
+    return next(new AppError("Please fill all fields", 400));
 
-  const image = await uploadFileHelper(req?.file, 'course');
-  if (image) req.body['image'] = image;
+  const image = await uploadFileHelper(req?.file, "course");
+  if (image) req.body["image"] = image;
 
   const course = await Course.create(req.body);
 
@@ -29,16 +29,12 @@ const createCourse = catchAsync(async (req, res, next) => {
 const getCourse = catchAsync(async (req, res) => {
   const { skip, limit } = paginate(req);
 
-  let count = 0;
-
   const filters = { isDeleted: false };
-  if (req.query?.code) filters['code'] = req.query?.code;
+  if (req.query?.code) filters["code"] = req.query?.code;
   if (req.query?.courseTitle)
-    filters['courseTitle'] = new RegExp(req.query?.courseTitle);
+    filters["courseTitle"] = new RegExp(req.query?.courseTitle);
 
-  if (!req.query?.page || +req.query?.page === 1) {
-    count = await Course.countDocuments(filters);
-  }
+  const count = await Course.countDocuments(filters);
 
   const courses = await Course.find(filters)
     .sort({ createdAt: -1 })
@@ -52,7 +48,7 @@ const getCourse = catchAsync(async (req, res) => {
 const getCourseById = catchAsync(async (req, res) => {
   const filters = { isDeleted: false };
   const course = await Course.findById(req.params?.id, { filters }).lean();
-  if (!course) return next(new AppError('Course not found', 404));
+  if (!course) return next(new AppError("Course not found", 404));
 
   const videoCount = Video.find({
     course: req.params.id,
@@ -71,16 +67,16 @@ const getCourseById = catchAsync(async (req, res) => {
 const deleteCourse = catchAsync(async (req, res) => {
   await Course.findByIdAndUpdate(req.params?.id, { isDeleted: true });
 
-  return res.status(200).json('Course deleted');
+  return res.status(200).json("Course deleted");
 });
 
 const updateCourse = catchAsync(async (req, res, next) => {
   const course = await Course.findById(req.params?.id);
 
-  if (!course) return next(new AppError('Course not found', 404));
+  if (!course) return next(new AppError("Course not found", 404));
 
-  const image = await updateFileHelper(req?.file, course?.image?.key, 'course');
-  if (image) req.body['image'] = image;
+  const image = await updateFileHelper(req?.file, course?.image?.key, "course");
+  if (image) req.body["image"] = image;
 
   for (let field in req.body) {
     course[field] = req.body[field];
@@ -94,12 +90,12 @@ const updateCourse = catchAsync(async (req, res, next) => {
 const createCheckoutSession = catchAsync(async (req, res, next) => {
   const { courseId } = req.body;
 
-  if (!courseId) return next(new AppError('Course Id is required'));
+  if (!courseId) return next(new AppError("Course Id is required"));
 
   const course = await Course.findById(courseId).lean();
 
   if (!course || !course?.price)
-    return next(new AppError('Course Not found', 404));
+    return next(new AppError("Course Not found", 404));
 
   const isEnrolled = await EnrolCourse.findOne({
     course: courseId,
@@ -107,14 +103,14 @@ const createCheckoutSession = catchAsync(async (req, res, next) => {
     access: true,
   });
 
-  if (isEnrolled) return next(new AppError('Course already Enrolled'));
+  if (isEnrolled) return next(new AppError("Course already Enrolled"));
 
   const session = await stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
+    payment_method_types: ["card"],
     line_items: [
       {
         price_data: {
-          currency: 'inr',
+          currency: "inr",
           product_data: {
             name: course?.courseTitle,
             description: course?.description,
@@ -125,13 +121,13 @@ const createCheckoutSession = catchAsync(async (req, res, next) => {
         quantity: 1,
       },
     ],
-    mode: 'payment',
+    mode: "payment",
     success_url: `${process.env.STRIPE_SUCCESS}${course?._id}`,
     cancel_url: `${process.env.STRIPE_FAILURE}/${course?._id}`,
     customer_email: req?.user?.email,
     metadata: {
       user: req?.user?.id,
-      course: course?._id + '',
+      course: course?._id + "",
       title: course?.courseTitle,
       role: req?.user?.role,
     },
@@ -146,7 +142,7 @@ const createCheckoutSession = catchAsync(async (req, res, next) => {
     await Order.create({
       user: req?.user?.id,
       course: course?._id,
-      status: 'pending',
+      status: "pending",
       total: course?.price,
     });
   }

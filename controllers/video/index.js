@@ -7,7 +7,7 @@ const { uploadFileHelper, getSignedUrl } = require("../../lib/s3");
 const Material = require("../../models/Material.model");
 
 const getVideoForCourse = catchAsync(async (req, res, next) => {
-  const isEnrolled = await EnrolCourse({
+  const isEnrolled = await EnrolCourse.findOne({
     course: req.params?.courseId,
     user: req?.user?.id,
     access: true,
