@@ -167,7 +167,6 @@ const login = catchAsync(async (req, res, next) => {
 });
 
 const getMe = catchAsync(async (req, res, next) => {
-  console.log(req.user);
   const user = await Student.findOne({
     _id: req?.user?.id,
     isDeleted: false,
