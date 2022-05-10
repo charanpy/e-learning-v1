@@ -91,12 +91,17 @@ const getOrders = catchAsync(async (req, res, next) => {
     filter.status = req.query.status;
   }
 
+  const totalCount = await Order.countDocuments(filter);
+
   const orders = await Order.find(filter)
-    .sort({ updatedAt: -1 })
+    .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit);
-
-  return res.status(200).json(orders);
+  const details = {
+    count: totalCount,
+    data: orders,
+  };
+  return res.status(200).json(details);
 });
 
 module.exports = { createOrderOnWebHookEvent, getOrders };
