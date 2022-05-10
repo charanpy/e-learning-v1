@@ -1,8 +1,8 @@
-const catchAsync = require("../lib/catchAsync");
-const paginate = require("../lib/paginate");
-const stripe = require("../lib/stripe");
-const EnrolCourse = require("../models/EnrolCourse.model");
-const Order = require("../models/Order.model");
+const catchAsync = require('../lib/catchAsync');
+const paginate = require('../lib/paginate');
+const stripe = require('../lib/stripe');
+const EnrolCourse = require('../models/EnrolCourse.model');
+const Order = require('../models/Order.model');
 
 const enrollToCourse = async (metadata) => {
   if (!metadata) return;
@@ -10,14 +10,14 @@ const enrollToCourse = async (metadata) => {
   const enrollCourse = EnrolCourse.create({
     user: metadata?.user,
     course: metadata?.course,
-    role: metadata?.role || "member",
+    role: metadata?.role || 'member',
     access: true,
   });
 
   const order = Order.findOneAndUpdate({
     user: metadata?.user,
     course: metadata?.course,
-    status: "success",
+    status: 'success',
     purchasedAt: Date.now(),
   });
 
@@ -29,16 +29,15 @@ const orderFailed = async (metadata, fail = true) => {
   return Order.findOneAndUpdate({
     user: metadata?.user,
     course: metadata?.course,
-    status: fail ? "failed" : "cancelled",
+    status: fail ? 'failed' : 'cancelled',
   });
 };
 
 const createOrderOnWebHookEvent = catchAsync(
   async (request, response, next) => {
     const payload = request.body;
-    const sig = request.headers["stripe-signature"];
+    const sig = request.headers['stripe-signature'];
 
-    
     const event = stripe.webhooks.constructEvent(
       payload,
       sig,
@@ -46,24 +45,28 @@ const createOrderOnWebHookEvent = catchAsync(
     );
 
     console.log(event.type);
+
     switch (event.type) {
-      case "checkout.session.completed": {
+      case 'checkout.session.completed': {
         const session = event.data.object;
-        if (session.payment_status === "paid") {
+        console.log(event.data.object.status);
+        if (session.payment_status === 'paid') {
           await enrollToCourse(session?.metadata);
-        } else {
-          await orderFailed(session?.metadata);
         }
+        // if (session.)
+        // } else {
+        //   await orderFailed(session?.metadata);
+        // }
         break;
       }
-      case "checkout.session.async_payment_succeeded": {
+      case 'checkout.session.async_payment_succeeded': {
         const session = event.data.object;
 
         await enrollToCourse(session?.metadata);
         break;
       }
 
-      case "checkout.session.async_payment_failed": {
+      case 'checkout.session.async_payment_failed': {
         const session = event.data.object;
 
         await orderFailed(session?.metadata);
