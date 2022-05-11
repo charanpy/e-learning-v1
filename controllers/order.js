@@ -1,9 +1,9 @@
-const catchAsync = require("../lib/catchAsync");
-const paginate = require("../lib/paginate");
-const stripe = require("../lib/stripe");
-const EnrolCourse = require("../models/EnrolCourse.model");
-const Order = require("../models/Order.model");
-const Admin = require("../models/Admin.model");
+const catchAsync = require('../lib/catchAsync');
+const paginate = require('../lib/paginate');
+const stripe = require('../lib/stripe');
+const EnrolCourse = require('../models/EnrolCourse.model');
+const Order = require('../models/Order.model');
+const Admin = require('../models/Admin.model');
 
 const enrollToCourse = async (metadata) => {
   if (!metadata) return;
@@ -109,7 +109,7 @@ const getOrders = catchAsync(async (req, res, next) => {
 const getOrderById = catchAsync(async (req, res, next) => {
   const order = await Order.findById(req.params.id);
   if (!order) {
-    return next(new AppError("Order not found", 400));
+    return next(new AppError('Order not found', 400));
   }
   return res.status(200).json(order);
 });
@@ -118,7 +118,7 @@ const getOrderById = catchAsync(async (req, res, next) => {
 const updateOrderStatus = catchAsync(async (req, res, next) => {
   const admin = await Admin.findById(req?.user?.id);
   if (!admin) {
-    return next(new AppError("Permission Denied", 400));
+    return next(new AppError('Permission Denied', 400));
   }
 
   await Order.findOneAndUpdate(
@@ -127,7 +127,19 @@ const updateOrderStatus = catchAsync(async (req, res, next) => {
     { new: true }
   );
 
-  return res.status(200).json("Status Updated");
+  if (req.body?.status === 'paid') {
+    await EnrolCourse.create({
+      course: req.body?.courseId,
+      user: req.body?.userId,
+    });
+  } else {
+    await EnrolCourse.findOneAndDelete({
+      course: req.body?.courseId,
+      user: req.body?.userId,
+    });
+  }
+
+  return res.status(200).json('Status Updated');
 });
 module.exports = {
   createOrderOnWebHookEvent,
