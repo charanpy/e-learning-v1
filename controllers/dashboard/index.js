@@ -39,7 +39,7 @@ const getDashboardCountDetails = catchAsync(async (req, res, next) => {
     {
       title: "Enroled Courses",
       count: courseEnrole,
-      url: "/course-enrole",
+      url: "/purchased-courses",
       bg: "d2",
     },
     {

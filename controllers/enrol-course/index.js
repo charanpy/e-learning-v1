@@ -85,7 +85,7 @@ const getStudentsByCourseID = catchAsync(async (req, res) => {
   const courseId = req.params.id;
   const students = await EnrolCourse.find({
     course: courseId,
-  }).populate("student");
+  }).populate("user").populate("course");
   return res.status(200).json(students);
 });
 
