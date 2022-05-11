@@ -131,6 +131,8 @@ const updateOrderStatus = catchAsync(async (req, res, next) => {
     await EnrolCourse.create({
       course: req.body?.courseId,
       user: req.body?.userId,
+      access: true,
+      role: 'member',
     });
   } else {
     await EnrolCourse.findOneAndDelete({
