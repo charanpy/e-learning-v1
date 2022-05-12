@@ -31,21 +31,15 @@ const deleteIssue = catchAsync(async (req, res, next) => {
 });
 
 const getIssue = catchAsync(async (_, res) => {
-  const issue = await Issue.find({})
-    .populate("course")
-    .populate("user")
-    .populate("order");
+  const issue = await Issue.find({}).populate("order");
 
   return res.status(200).json(issue);
 });
 
 // get issue by id
-const getIssueById = catchAsync(async (_, res) => {
-  const issue = await Issue.findById(req.params?.id)
-    .populate("course")
-    .populate("user")
-    .populate("order");
-
+const getIssueById = catchAsync(async (req, res, next) => {
+  const issue = await Issue.findById(req.params.id).populate("order");
+  if (!issue) return next(new AppError("Issue Not Found", 400));
   return res.status(200).json(issue);
 });
 
@@ -53,5 +47,5 @@ module.exports = {
   createIssue,
   deleteIssue,
   getIssue,
-  getIssueById
+  getIssueById,
 };
