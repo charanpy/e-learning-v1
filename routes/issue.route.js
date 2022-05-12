@@ -1,14 +1,22 @@
-const express = require('express');
-const { createIssue, getIssue, deleteIssue } = require('../controllers/issue');
-const { checkRole, checkToken } = require('../services/auth');
+const express = require("express");
+const {
+  createIssue,
+  getIssue,
+  deleteIssue,
+  getIssueById,
+} = require("../controllers/issue");
+const { checkRole, checkToken } = require("../services/auth");
 
 const router = express.Router();
 
 router
-  .route('/')
+  .route("/")
   .post(checkToken, createIssue)
-  .get(checkToken, checkRole('admin'), getIssue);
+  .get(checkToken, checkRole("admin"), getIssue);
 
-router.route('/:id').delete(checkToken, checkRole('admin'), deleteIssue);
+router
+  .route("/:id")
+  .delete(checkToken, checkRole("admin"), deleteIssue)
+  .get(checkToken, checkRole("admin"), getIssueById);
 
 module.exports = router;
