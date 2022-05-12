@@ -32,6 +32,7 @@ const libMaterial = require('./routes/lib-material.route');
 const fileView = require('./routes/file-view.route');
 const completeLesson = require('./routes/completeLesson.route');
 const { createOrderOnWebHookEvent } = require('./controllers/order');
+const issueRoutes = require('./routes/issue.route');
 
 app.use('/api/v2/author', authorRoutes);
 app.use('/api/v2/course', courseRoutes);
@@ -48,6 +49,8 @@ app.use('/api/v2/order', orderRoutes);
 app.use('/api/v2/lib-material', libMaterial);
 app.use('/api/v2/file-view', fileView);
 app.use('/api/v2/complete-lesson', completeLesson);
+app.use('/api/v2/issue', issueRoutes);
+
 app.post(
   '/webhook',
   express.raw({ type: 'application/json' }),

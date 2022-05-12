@@ -1,19 +1,20 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const OrderSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Student",
+      ref: 'Student',
     },
     course: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Course",
+      ref: 'Course',
     },
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Admin",
+      ref: 'Admin',
     },
+    transactionID: String,
     total: Number,
     paymentType: String,
     status: String,
@@ -23,11 +24,11 @@ const OrderSchema = new mongoose.Schema(
 );
 
 OrderSchema.pre(/find/, function () {
-  this.populate("user", {
+  this.populate('user', {
     password: false,
-  }).populate("course");
+  }).populate('course');
 });
 
-const Order = mongoose.model("Order", OrderSchema);
+const Order = mongoose.model('Order', OrderSchema);
 
 module.exports = Order;
